@@ -10,7 +10,7 @@ HEADERS		= MiscHeader.h JobHeader.h CoordHeader.h CoordOperations.h ConsoleHeade
 
 COORD		= coord
 CONSOLE		= console
-POOL 		= pool
+POOL		= pool
 
 CC 		= gcc
 FLAGS 		= -g -c
