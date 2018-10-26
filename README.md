@@ -9,10 +9,10 @@ Jobs will be processed by a hierarchy of processes created dynamically using *ex
 It consists of three main parts :
 
   * jms_console : Provides an interface for the user to submit the jobs.
-    * Run *$ ./jms console -w \<jms in> -r \<jms out> -o \<operations file>* to invoke console.
+    * Invocation: *$ ./jms console -w \<jms in> -r \<jms out> -o \<operations file>* 
     
   * jms_coord   : Responsible for coordinating the jobs. Creates *pool* processes which will take care of the execution of the jobs.
-    * Run *$ ./jms coord -l \<path> -n \<jobs pool> -w \<jms out> -r \<jms in>* to invoke coordinator. 
+    * Invocation *$ ./jms coord -l \<path> -n \<jobs pool> -w \<jms out> -r \<jms in>*  
     
   * pool        : Each pool handles the execution of a number of jobs. Returns statistics back to the coordinator upon finishing.
   
