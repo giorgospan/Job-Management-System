@@ -40,10 +40,10 @@ Operations file will contain operations of the following types :
 * `./jms console -w <jms in> -r <jms out> -o <operations file>`
 
 * `./jms coord -l <path> -n <jobs pool> -w <jms out> -r <jms in>`
-=======
+
 * `./jms console -w \<jms in> -r \<jms out> -o \<operations file>`
 
 * `./jms coord -l \<path> -n \<jobs pool> -w \<jms out> -r \<jms in>`
->>>>>>> 1292f3858419ae3650838714e95e1fe81cf931b6
+
 
   Modify makefile constants to match your needs (e.g: pipe names, output directory e.t.c)
