@@ -2,8 +2,6 @@
 #define POOL_OPERATIONS_H
 
 
-
-
 void submit(char*,char*);
 
 

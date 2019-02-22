@@ -7,9 +7,9 @@
 #include <sys/wait.h> /*waitpid()*/
 #include <signal.h>
 
-#include "MiscHeader.h" /*Misc defines*/
-#include "PoolHeader.h" /*Declarations of vars associated with pool*/
-#include "PoolOperations.h" /* submit() status()... */
+#include "misc_header.h" /*Misc defines*/
+#include "pool_header.h" /*Declarations of vars associated with pool*/
+#include "pool_operations.h" /* submit() status()... */
 
 void pool_coord_comm(int in ,int out)
 {
@@ -27,11 +27,10 @@ void pool_coord_comm(int in ,int out)
 		/*Check if there is something new from coordinator */
 		if((nread=read(in,operation, MSGSIZE))>0)
 		{
-			process_response(operation,response,out);
+			parse_operation(operation,response,out);
 
 			/*Coord has allowed me to exit*/
 			if(!strcmp(response,"I AM EXITING")){break;}
-
 			/*I want to exit */
 			if(finished == maxjobs)
 			{
@@ -45,7 +44,8 @@ void pool_coord_comm(int in ,int out)
 
 
 		/*Check if a job has exited*/
-		if( (wpid=waitpid ((pid_t)0, &status , WNOHANG ))>0)update_table(wpid);
+		if( (wpid=waitpid (-1, &status , WNOHANG ))>0)
+				update_table(wpid);
 
 	}
 	free(operation);
@@ -78,7 +78,7 @@ void catch_term_signal(int signo)
 }
 
 
-void process_response(char* operation,char* response,int out)
+void parse_operation(char* operation,char* response,int out)
 {
 	char* token = malloc(MSGSIZE*sizeof(char));
 	sscanf(operation,"%s",token);

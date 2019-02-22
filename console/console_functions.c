@@ -6,8 +6,8 @@
 #include <sys/types.h> /*for creating named pipe*/
 #include <sys/stat.h>
 
-#include "ConsoleHeader.h"
-#include "MiscHeader.h"
+#include "console_header.h"
+#include "misc_header.h"
 
 /*Communication between console <---> coordinator*/
 int console_communication(FILE* file,int in,int out)
@@ -80,7 +80,6 @@ int console_communication(FILE* file,int in,int out)
 }
 
 
-
 /*Reading operations from stdin*/
 void scan_operation(char* operation)
 {
@@ -127,31 +126,25 @@ void scan_operation(char* operation)
 				else sprintf(operation,"status-all");
 				break;
 			case 4:
-				printf("Active jobs:\n");
 				sprintf(operation,"show-active");
 				break;
 			case 5:
-				printf("Pool & NumOfJobs:\n");
 				sprintf(operation,"show-pools");
 				break;
 			case 6:
-				printf("Finished jobs:\n");
 				sprintf(operation,"show-finished");
 				break;
 			case 7:
 				printf("Enter job ID\n");
 				scanf("%d",&jobID);
 				sprintf(operation,"suspend %d",jobID);
-				printf("Sending suspend signal to job with ID:%d\n",jobID);
 				break;
 			case 8:
 				printf("Enter job ID\n");
 				scanf("%d",&jobID);
 				sprintf(operation,"resume %d",jobID);
-				printf("Sending resume signal to job with ID:%d\n",jobID);
 				break;
 			case 9:
-				printf("System shutting down...\n");
 				sprintf(operation,"shutdown");
 				break;
 			default:

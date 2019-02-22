@@ -9,9 +9,9 @@
 #include <errno.h>
 #include <signal.h>
 
-#include "CoordHeader.h"
-#include "CoordOperations.h"
-#include "MiscHeader.h"
+#include "coord_header.h"
+#include "coord_operations.h"
+#include "misc_header.h"
 
 
 void coord_communication(int in,int out)
@@ -36,7 +36,7 @@ void coord_communication(int in,int out)
 	{
 		pool_table[i].CurrentNumberOfJobs=0;
 		pool_table[i].running=0;
-		pool_table[i].jobIDUpperBound=jobs_pool;
+		pool_table[i].jobIDUpperBound=jobs_per_pool;
 		pool_table[i].jobIDLowerBound=i+1;
 	}
 /***********************************************************************************/
@@ -44,11 +44,12 @@ void coord_communication(int in,int out)
 	/*Loop until operation is "shutdown"*/
 	while(strcmp(operation,"shutdown"))
 	{
+
 		/*Read a new operation from console*/
 		if(  (nread=read(in,operation,MSGSIZE))>0 )
 		{
-			/*Create response for the given operation...*/
-			create_response(operation,response);
+			/*Execute the given command and fetch response via the "response" argument*/
+			execute_operation(operation,response);
 
 			/*Send response to console*/
 			if( (nwrite=write(out,response,RESPONSESIZE))==-1)
@@ -74,7 +75,7 @@ void coord_communication(int in,int out)
 	free(response);
 }
 
-void create_response(char* operation,char* response)
+void execute_operation(char* operation,char* response)
 {
 	char* token = malloc(MSGSIZE*sizeof(char));
 	sscanf(operation,"%s",token);
@@ -126,7 +127,7 @@ void update_table(int i)
 {
 	pool_table[i].running = 0;
 	pool_table[i].CurrentNumberOfJobs = 0;
-	jobs_served+=jobs_pool;
+	jobs_served+=jobs_per_pool;
 }
 
 int first_available(void)
@@ -136,7 +137,7 @@ int first_available(void)
 	int retval;
 	for(i=0;i<pools;++i)
 	{
-		if(pool_table[i].CurrentNumberOfJobs < jobs_pool)
+		if(pool_table[i].CurrentNumberOfJobs < jobs_per_pool)
 		{
 			retval=i;
 			break;
@@ -213,25 +214,25 @@ void create_pool(int index)
 		case 0:
 		{
 			/**
-			 * Argumnets given to ./pool:
+			 * Argumnets given to the pool program:
 			 *
-			 * 1. pool_number
-			 * 2. max jobs per pool [= jobs_pool]
+			 * 1. pool_first_job
+			 * 2. max jobs per pool [= jobs_per_pool]
 			 * 3. fifo in name  [already attached to the path]
 			 * 4. fifo out name [already attached to the path]
 			 * 5. path for output directories
 			 */
-			char pool_number[5];
+			char pool_first_job[5];
 			char maxjobs[5];
-			sprintf(pool_number,"%d",jobs_sent+1);
-			sprintf(maxjobs,"%d",jobs_pool);
+			sprintf(pool_first_job,"%d",jobs_sent+1);
+			sprintf(maxjobs,"%d",jobs_per_pool);
 
-			if(execl("./build/pool","pool",pool_number,maxjobs,in,out,path,NULL)==-1){perror("[Error] Executing pool");exit(-2);}
+			if(execl("./build/pool","pool",pool_first_job,maxjobs,in,out,path,NULL)==-1){perror("[Error] Executing pool");exit(-2);}
 		}
 		default:
 		{
-			pool_table[index].jobIDUpperBound = jobs_sent + jobs_pool;
-			pool_table[index].jobIDLowerBound = pool_table[index].jobIDUpperBound - jobs_pool + 1;
+			pool_table[index].jobIDUpperBound = jobs_sent + jobs_per_pool;
+			pool_table[index].jobIDLowerBound = pool_table[index].jobIDUpperBound - jobs_per_pool + 1;
 			pool_table[index].running = 1;
 			pool_table[index].pool_pid = p;
 
@@ -271,6 +272,8 @@ void exit_pool(int pool,char* response)
 
 			/*Wait for it to exit*/
 			waitpid(pool_table[pool].pool_pid,&status,WNOHANG);
+
+			printf("Pool with pool_id %d exited\n",pool);
 
 			/*Update pool table*/
 			update_table(pool);

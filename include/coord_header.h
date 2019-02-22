@@ -22,17 +22,14 @@ extern struct entry* pool_table;
 /*Number of jobs served*/
 extern int jobs_served;
 
-
 /*Number of pools in our table [either running or not yet executed]*/
 extern int pools;
 
 /*Number of pools that have been executed during the program */
 extern int jobs_sent;
 
-
 /*Maximum number of jobs per pool*/
-extern int jobs_pool;
-
+extern int jobs_per_pool;
 
 /*Path for creating fifos and directories*/
 extern char* path;
@@ -44,7 +41,7 @@ extern char* path;
 void coord_communication(int,int);
 
 /*  Communication between console <-------> pools */
-void create_response(char*,char*);
+void execute_operation(char*,char*);
 
 /*Updates pool table*/
 void update_table(pid_t);

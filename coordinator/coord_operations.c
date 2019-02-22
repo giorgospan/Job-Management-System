@@ -7,19 +7,17 @@
 #include <signal.h>
 #include <errno.h>
 
-#include "CoordHeader.h" /*Declarations of vars associated with coordinator*/
-#include "CoordOperations.h"
-#include "MiscHeader.h"
+#include "coord_header.h" /*Declarations of vars associated with coordinator*/
+#include "coord_operations.h"
+#include "misc_header.h"
 
 
-/************************ NOTE ********************************************/
-
-/* In those functions there is no need to check if console has sent me something
- because it has not yet received "OK" for current operation as it is currently
- under processesing by the pools.*/
-
-/*************************************************************************/
-
+/**
+ * In these functions there is no need to check if console has sent me something
+ * because it has not yet received "OK" for current operation as it is currently
+ * under processesing by the pools.
+ *
+ */
 
 void submit(char* operation,char* response)
 {
@@ -29,7 +27,9 @@ void submit(char* operation,char* response)
 
 	/*Find first available pool*/
 	available = first_available();
-	/*Send operation to pool */
+	printf("available pool:%d\n",available);
+
+	/*Send operation to the pool */
 	if ((nwrite=write(pool_table[available].fd_in,operation, MSGSIZE)) == -1)
 	{
 		perror("Coord writing to pool ");exit(-6);
@@ -44,7 +44,7 @@ void submit(char* operation,char* response)
 			/* Increase number of jobs sent in general */
 			++pool_table[available].CurrentNumberOfJobs ;
 			++jobs_sent;
-			/*Check if a pool wants to exit*/
+			/*Check if the pool wants to exit*/
 			exit_pool(available,response);
 
 			break;
@@ -179,6 +179,7 @@ void show_active(char* operation,char* response)
 			++send_counter;
 		}
 	}
+
 	while(1)
 	{
 		/*Loop through currently running pools until I've received all info*/

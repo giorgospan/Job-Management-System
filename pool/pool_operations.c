@@ -6,10 +6,10 @@
 #include <sys/types.h> /*kill()*/
 #include <signal.h>
 
-#include "MiscHeader.h" /*Misc defines*/
-#include "PoolHeader.h" /*Declarations of vars associated with pool*/
-#include "PoolOperations.h"
-#include "JobHeader.h" /*create_directory() , prepare_for_exec() */
+#include "misc_header.h" /*Misc defines*/
+#include "pool_header.h" /*Declarations of vars associated with pool*/
+#include "pool_operations.h"
+#include "job_header.h" /*create_directory() , prepare_for_exec() */
 
 void submit(char* job,char* response)
 {
@@ -30,7 +30,7 @@ void submit(char* job,char* response)
 
 
 	/*Mark its unique jobID*/
-	id = job_table[place].jobID = pool_number + jobs ;
+	id = job_table[place].jobID = pool_first_job + jobs ;
 
 	/*Mark this job as Active*/
 	job_table[place].status = 1;

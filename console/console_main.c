@@ -7,20 +7,20 @@
 #include <string.h>
 #include <errno.h>
 
-#include "ConsoleHeader.h"
+#include "console_header.h"
 
 int main(int argc,char* argv[])
 {
-	
+
 	int i;
 	int in;
 	int out;
 	int retval;
-	
+
 	char* jms_in=NULL;
 	char* jms_out=NULL;
-	char* opfile=NULL; 
-	
+	char* opfile=NULL;
+
 	/*scanning command line arguments*/
 	for(i=1;i<argc;++i)
 	{
@@ -46,31 +46,27 @@ int main(int argc,char* argv[])
 		printf("[Console]You did not enter jms_in and jms_out pipe names.Exiting...\n");
 		exit(1);
 	}
-	// printf("Console:\n\n");
-	// printf("jms_in: %s\n",jms_in);
-	// printf("jms_out: %s\n",jms_out);
-	// printf("Operation file:%s\n\n",opfile);
-	
+
 /***********************************************************************************/
-		
+
 	/*Creating jms_in fifo in current directory*/
 	if ( mkfifo(jms_out, 0666) == -1 ){
 		if ( errno!=EEXIST ) { perror("receiver: mkfifo"); exit(1); };
 		}
-	
+
 	/*Opening both fifos*/
 	if ( (out=open(jms_out, O_RDONLY  )) < 0)
 	{
-		perror("jms_out open problem[console]"); exit(3);	
+		perror("jms_out open problem[console]"); exit(3);
 	}
 	if ( (in=open(jms_in, O_WRONLY )) < 0)
 	{
-		perror("jms_in open problem[console]"); exit(2);	
+		perror("jms_in open problem[console]"); exit(2);
 	}
-	
-/***********************************************************************************/	
-	
-	
+
+/***********************************************************************************/
+
+
 	/*Use operations file*/
 	if(opfile!=NULL)
 	{
@@ -87,10 +83,10 @@ int main(int argc,char* argv[])
 			free(opfile);
 		}
 	}
-	
+
 	/*Use stdin[prompt]*/
-	// if(retval==0)
-	// console_communication(stdin,in,out);
+	if(retval==0)
+		console_communication(stdin,in,out);
 
 /***********************************************************************************/
 
@@ -100,7 +96,7 @@ int main(int argc,char* argv[])
 		perror("Closing jms_in[console]");
 		exit(6);
 	}
-	
+
 	if( close(out)==-1)
 	{
 		perror("Closing jms_out[console]");

@@ -8,8 +8,8 @@
 #include <dirent.h>
 #include <unistd.h> /*to have access to fds of stdin and stderr*/
 
-#include "MiscHeader.h"
-#include "JobHeader.h"
+#include "misc_header.h"
+#include "job_header.h"
 
 void create_directory(char* path,int jobID,int* outfd,int* errfd)
 {

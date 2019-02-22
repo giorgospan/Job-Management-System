@@ -34,7 +34,7 @@ all:clean $(POOL) run_coord run_cons
 ############## COORDINATOR ##############
 
 run_coord:$(COORD)
-	sudo ./${COORD} -l $(DIRPATH) -w $(JMS_OUT) -r $(JMS_IN) -n $(JOBS_POOL) &
+	sudo ${COORD} -l $(DIRPATH) -w $(JMS_OUT) -r $(JMS_IN) -n $(JOBS_POOL) &
 
 $(COORD):$(COORD_OBJS) | $(BUILDDIR)
 	$(CC) $(CFLAGS) -o $@ $(COORD_OBJS)
@@ -45,7 +45,7 @@ $(COORD_OBJS):./coordinator/%.o : ./coordinator/%.c
 ############## CONSOLE ##############
 
 run_cons:$(CONSOLE)
-	sudo ./${CONSOLE} -w $(JMS_IN) -r $(JMS_OUT) -o $(OPFILE)
+	sudo ${CONSOLE} -w $(JMS_IN) -r $(JMS_OUT) -o $(OPFILE)
 
 $(CONSOLE):$(CONSOLE_OBJS) | $(BUILDDIR)
 	$(CC) $(CFLAGS) -o $@ $(CONSOLE_OBJS)
@@ -75,13 +75,18 @@ count:
 # cleanup
 .PHONY: clean
 clean:
-	# delete object files and executables
+	@# delete object files and executables
 	@rm -f $(COORD_OBJS) $(CONSOLE_OBJS) $(POOL_OBJS) $(COORD) $(CONSOLE) $(POOL)
 
-	# delete all named pipes in the current directory
+	@# delete all named pipes in the current directory
 	@find ./* -type p -delete
 
-	# delete output directories
+	@# delete output directories
 	@sudo rm -rf sdi1400136_*
 
 	@echo Cleanup completed
+
+# kill any processes from previous runs
+.PHONY: kill
+kill:
+	sudo pkill coord;sudo pkill pool
