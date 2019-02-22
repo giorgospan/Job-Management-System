@@ -11,10 +11,13 @@ POOL_OBJS      := $(POOL_SOURCE:%.c=%.o)
 # headers
 HEADERS	       := $(wildcard include/*.h)
 
+# build directory
+BUILDDIR       := ./build
+
 # targets
-COORD		       := ./build/coord
-CONSOLE		     := ./build/console
-POOL		       := ./build/pool
+COORD		       := $(BUILDDIR)/coord
+CONSOLE		     := $(BUILDDIR)/console
+POOL		       := $(BUILDDIR)/pool
 
 CC 		         := gcc
 CFLAGS 		     := -I./include -g
@@ -33,7 +36,7 @@ all:$(COORD) $(CONSOLE) $(POOL)
 run_coord:$(COORD)
 	# ./${COORD} -l $(DIRPATH) -w $(JMS_OUT) -r $(JMS_IN) -n $(JOBS_POOL) &
 
-$(COORD):$(COORD_OBJS)
+$(COORD):$(COORD_OBJS) | $(BUILDDIR)
 	$(CC) $(CFLAGS) -o $@ $(COORD_OBJS)
 
 $(COORD_OBJS):./coordinator/%.o : ./coordinator/%.c
@@ -44,7 +47,7 @@ $(COORD_OBJS):./coordinator/%.o : ./coordinator/%.c
 run_cons:$(CONSOLE)
 	# ./${CONSOLE} -w $(JMS_IN) -r $(JMS_OUT) -o $(OPFILE)
 
-$(CONSOLE):$(CONSOLE_OBJS)
+$(CONSOLE):$(CONSOLE_OBJS) | $(BUILDDIR)
 	$(CC) $(CFLAGS) -o $@ $(CONSOLE_OBJS)
 
 $(CONSOLE_OBJS):./console/%.o : ./console/%.c
@@ -53,12 +56,15 @@ $(CONSOLE_OBJS):./console/%.o : ./console/%.c
 
 ############## POOL ##############
 
-$(POOL):$(POOL_OBJS)
+$(POOL):$(POOL_OBJS) | $(BUILDDIR)
 	$(CC) $(CFLAGS) -o $@ $(POOL_OBJS)
 
 $(POOL_OBJS):./pool/%.o : ./pool/%.c
 			$(CC) $(CFLAGS) -c $< -o $@
 
+# this rule will be triggered in case build dir is not created yet
+$(BUILDDIR):
+	@mkdir $@
 
 # count
 .PHONY: count
@@ -69,5 +75,5 @@ count:
 # cleanup
 .PHONY: clean
 clean:
-	@rm -f $(COORD_OBJS) $(CONSOLE_OBJS) $(POOL_OBJS) ./build/*
+	@rm -f $(COORD_OBJS) $(CONSOLE_OBJS) $(POOL_OBJS) $(COORD) $(CONSOLE) $(POOL)
 	@echo Cleanup completed
