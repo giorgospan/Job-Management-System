@@ -1,79 +1,73 @@
-COORD_OBJS	     := coord_main.o coord_functions.o coord_operations.o
-CONSOLE_OBJS 	   := console_main.o console_functions.o
-POOL_OBJS 	     := pool_main.o pool_functions.o pool_operations.o job.o
+# source files
+COORD_SOURCE   := $(wildcard ./coordinator/*.c)
+CONSOLE_SOURCE := $(wildcard ./console/*.c)
+POOL_SOURCE    := $(wildcard ./pool/*.c)
 
-COORD_SOURCE 	   := coord_main.c coord_functions.c coord_operations.c
-CONSOLE_SOURCE 	 := console_main.c console_functions.c
-POOL_SOURCE 	   := pool_main.c pool_functions.c pool_operations.c job.c
+# object files
+COORD_OBJS     := $(COORD_SOURCE:%.c=%.o)
+CONSOLE_OBJS   := $(CONSOLE_SOURCE:%.c=%.o)
+POOL_OBJS      := $(POOL_SOURCE:%.c=%.o)
 
-HEADERS	         := MiscHeader.h JobHeader.h CoordHeader.h CoordOperations.h ConsoleHeader.h PoolHeader.h PoolOperations.h
+# headers
+HEADERS	       := $(wildcard include/*.h)
 
-COORD		         := coord
-CONSOLE		       := console
-POOL		         := pool
+# targets
+COORD		       := ./build/coord
+CONSOLE		     := ./build/console
+POOL		       := ./build/pool
 
-CC 		           := gcc
-FLAGS 		       := -g -c
+CC 		         := gcc
+CFLAGS 		     := -I./include -g
 
-JMS_IN 		       := jms_in
-JMS_OUT		       := jms_out
-DIRPATH 	       := ./
-OPFILE 		       := optest
-JOBS_POO	       := 20
+JMS_IN 		     := jms_in
+JMS_OUT		     := jms_out
+DIRPATH 	     := ./
+OPFILE 		     := optest
+JOBS_POO	     := 20
+
+all:$(COORD) $(CONSOLE) $(POOL)
 
 
-##########################################
-all:$(POOL) run_coord run_cons
+############## COORDINATOR ##############
 
 run_coord:$(COORD)
-	./${COORD} -l $(DIRPATH) -w $(JMS_OUT) -r $(JMS_IN) -n $(JOBS_POOL) &
+	# ./${COORD} -l $(DIRPATH) -w $(JMS_OUT) -r $(JMS_IN) -n $(JOBS_POOL) &
+
+$(COORD):$(COORD_OBJS)
+	$(CC) $(CFLAGS) -o $@ $(COORD_OBJS)
+
+$(COORD_OBJS):./coordinator/%.o : ./coordinator/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+############## CONSOLE ##############
 
 run_cons:$(CONSOLE)
-	./${CONSOLE} -w $(JMS_IN) -r $(JMS_OUT) -o $(OPFILE)
-
-
-########## Executables ##############
-$(COORD):$(COORD_OBJS)
-	$(CC) -g $(COORD_OBJS) -o $@
+	# ./${CONSOLE} -w $(JMS_IN) -r $(JMS_OUT) -o $(OPFILE)
 
 $(CONSOLE):$(CONSOLE_OBJS)
-	$(CC) -g $(CONSOLE_OBJS) -o $@
+	$(CC) $(CFLAGS) -o $@ $(CONSOLE_OBJS)
+
+$(CONSOLE_OBJS):./console/%.o : ./console/%.c
+		$(CC) $(CFLAGS) -c $< -o $@
+
+
+############## POOL ##############
 
 $(POOL):$(POOL_OBJS)
-	$(CC) -g $(POOL_OBJS) -o $@
+	$(CC) $(CFLAGS) -o $@ $(POOL_OBJS)
 
-############## COORD_OBJS ##############
-coord_main.o:coord_main.c
-	$(CC) $(FLAGS) coord_main.c
-
-coord_functions.o:coord_functions.c
-	$(CC) $(FLAGS) coord_functions.c
-
-coord_operations.o:coord_operations.c
-	$(CC) $(FLAGS) coord_operations.c
-
-############## CONSOLE_OBJS ##############
-console_main.o:console_main.c
-	$(CC) $(FLAGS) console_main.c
-
-console_functions.o:console_functions.c
-	$(CC) $(FLAGS) console_functions.c
-
-############## POOL_OBJS ##############
-pool_main.o:pool_main.c
-	$(CC) $(FLAGS) pool_main.c
-
-pool_functions.o:pool_functions.c
-	$(CC) $(FLAGS) pool_functions.c
-
-pool_operations.o:pool_operations.c
-	$(CC) $(FLAGS) pool_operations.c
-
-job.o:job.c
-	$(CC) $(FLAGS) job.c
+$(POOL_OBJS):./pool/%.o : ./pool/%.c
+			$(CC) $(CFLAGS) -c $< -o $@
 
 
 # count
 .PHONY: count
 count:
-	wc $(COORD_SOURCE) $(CONSOLE_SOURCE) $(POOL_SOURCE) $(HEADERS)
+	@wc $(COORD_SOURCE) $(CONSOLE_SOURCE) $(POOL_SOURCE) $(HEADERS)
+
+
+# cleanup
+.PHONY: clean
+clean:
+	@rm -f $(COORD_OBJS) $(CONSOLE_OBJS) $(POOL_OBJS) ./build/*
+	@echo Cleanup completed

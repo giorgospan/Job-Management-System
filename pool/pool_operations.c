@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <time.h> 
+#include <time.h>
 #include <unistd.h> /*fork()*/
 #include <sys/types.h> /*kill()*/
 #include <signal.h>
@@ -17,8 +17,8 @@ void submit(char* job,char* response)
 	int id;
 	int place;
 	pid_t pid;
-	
-	
+
+
 	for(i=0;i<maxjobs;++i)
 	{
 		if(!job_table[i].jobID)
@@ -27,31 +27,31 @@ void submit(char* job,char* response)
 			break;
 		}
 	}
-	
-	
+
+
 	/*Mark its unique jobID*/
 	id = job_table[place].jobID = pool_number + jobs ;
-	
+
 	/*Mark this job as Active*/
 	job_table[place].status = 1;
-	
+
 	/*Mark its initialization time*/
 	job_table[place].init_time = time(NULL);
-	
+
 	/*Activity time initialized to 0*/
 	job_table[place].active_time = 0;
-	
+
 	/*last_suspended set to 0*/
 	job_table[place].last_suspended = 0;
-	
-	
+
+
 	/*Store the job name [might be useful for debugging]*/
 	job_table[place].job = malloc((strlen(job)+1)*sizeof(char));
 	strcpy(job_table[place].job,job);
-	
+
 	/*Increase number of jobs in the pool*/
 	++jobs;
-	
+
 	switch(pid=fork())
 	{
 		case -1:
@@ -59,12 +59,12 @@ void submit(char* job,char* response)
 			perror("Fork pool --> job");
 			exit(-1);
 		}
-		
+
 		case 0:
 		{
 			/*Create directory-files*/
 			/*Seperate arguments passed to exec*/
-			char** arguments = prepare_for_exec(path,job,id); 
+			char** arguments = prepare_for_exec(path,job,id);
 			/*Execute job*/
 			if(execvp(job,arguments)==-1)
 			{
@@ -104,12 +104,12 @@ void status_all(int limit,char* response)
 	char* curr_status = malloc(RESPONSESIZE*sizeof(char));
 	int c = 0;
 	int found = 0;
-	
-	
+
+
 	for(i=0;i<maxjobs;++i)
 	{
 		/*If limit is -1, if statement will always succeed*/
-		
+
 		if( curr_time - job_table[i].init_time <= limit && job_table[i].jobID)
 		{
 			found = 1;
@@ -121,15 +121,15 @@ void status_all(int limit,char* response)
 		}
 	}
 	if(!found)strcpy(response,"ZERO JOBS FOUND");
-	
-	
+
+
 	free(curr_status);
 }
 
 
 void show_active(char* response)
 {
-	
+
 	int i;
 	int c = 0;
 	char* jobID = malloc(10*sizeof(char));
@@ -155,7 +155,7 @@ void show_pools(char* response)
 {
 	int counter=0;
 	int i;
-	
+
 	for(i=0;i<maxjobs;++i)
 	{
 		if(job_table[i].jobID)
@@ -192,7 +192,7 @@ void suspend(int jobID,char* response)
 {
 	int i;
 	int ret;
-	
+
 	for(i=0;i<maxjobs;++i)
 	{
 		if(job_table[i].jobID == jobID)
@@ -202,7 +202,7 @@ void suspend(int jobID,char* response)
 			/*Change its status*/
 			job_table[i].status = 3;
 			int current = time(NULL);
-			
+
 			/*First time being suspended*/
 			if(!job_table[i].last_suspended)
 			{
@@ -218,10 +218,10 @@ void suspend(int jobID,char* response)
 			break;
 		}
 	}
-	
+
 	/*If kill() returned -1 ---> job had already finished*/
 	if(!ret)sprintf(response,"Sent suspend signal to JobID %d",jobID);
-	else sprintf(response,"Job had already finished",jobID);
+	else sprintf(response,"Job had already finished %d",jobID);
 }
 
 
@@ -242,6 +242,6 @@ void resume(int jobID,char* response)
 	}
 	/*If kill() returned -1 ---> job had already finished*/
 	if(!ret)sprintf(response,"Sent resume signal to JobID %d",jobID);
-	else sprintf(response,"Job had already finished",jobID);
+	else sprintf(response,"Job had already finished %d",jobID);
 }
 

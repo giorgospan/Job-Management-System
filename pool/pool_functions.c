@@ -2,7 +2,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <time.h>
 #include <sys/types.h> /*kill()*/
+#include <sys/wait.h> /*waitpid()*/
 #include <signal.h>
 
 #include "MiscHeader.h" /*Misc defines*/
@@ -11,22 +13,22 @@
 
 void pool_coord_comm(int in ,int out)
 {
-	
+
 	int nwrite,nread;
 	int status;
 	pid_t wpid;
 	int i;
 	char* operation = malloc(MSGSIZE*sizeof(char));
 	char* response = malloc(RESPONSESIZE*sizeof(char));
-	
-	
+
+
 	while(1)
 	{
 		/*Check if there is something new from coordinator */
 		if((nread=read(in,operation, MSGSIZE))>0)
 		{
 			process_response(operation,response,out);
-			
+
 			/*Coord has allowed me to exit*/
 			if(!strcmp(response,"I AM EXITING")){break;}
 
@@ -40,10 +42,10 @@ void pool_coord_comm(int in ,int out)
 			if ((nwrite=write(out,response, RESPONSESIZE)) == -1)
 			{ perror("Pool Writing"); exit(5); }
 		}
-		
+
 
 		/*Check if a job has exited*/
-		if( (wpid=waitpid (NULL, &status , WNOHANG ))>0)update_table(wpid);
+		if( (wpid=waitpid ((pid_t)0, &status , WNOHANG ))>0)update_table(wpid);
 
 	}
 	free(operation);
@@ -56,7 +58,7 @@ void catch_term_signal(int signo)
 	int wpid;
 	int status;
 	int still_in_progress = 0;
-	
+
 	for(i=0;i<maxjobs;++i)
 	{
 		/*Send signal to all processes that has not yet finished*/
@@ -65,7 +67,7 @@ void catch_term_signal(int signo)
 		{
 			/*Job might have finished while ive been here killing other jobs*/
 			kill(job_table[i].pid,signo);
-			if(waitpid(job_table[i].pid,&status)>0)
+			if(waitpid(job_table[i].pid,&status,WNOHANG)>0)
 			{
 				++still_in_progress;
 			}
@@ -122,7 +124,7 @@ void process_response(char* operation,char* response,int out)
 	{
 		int jobID;
 		sscanf(operation,"%*s %d",&jobID);
-		resume(jobID,response);	
+		resume(jobID,response);
 	}
 	else if(!strcmp(operation,"EXIT YES"))
 	{
@@ -160,7 +162,7 @@ void find_status(int jobID,int i,char* response)
 			int active = job_table[i]. active_time;
 			int plus = job_table[i].last_suspended;
 			int current = time(NULL);
-			
+
 			int running ;
 
 			/*It has never been suspended*/

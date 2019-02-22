@@ -1,0 +1,2 @@
+# ignore any object files from any directories
+./*/*.o

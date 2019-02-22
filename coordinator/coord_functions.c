@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <fcntl.h> 		/*for flags in open() system call*/
 #include <sys/types.h> /*for creating named pipe*/
+#include <sys/wait.h> /*for wait*/
 #include <sys/stat.h>
 #include <errno.h>
 #include <signal.h>
@@ -17,7 +18,7 @@ void coord_communication(int in,int out)
 {
 	char* operation = malloc(MSGSIZE*sizeof(char));
 	char* response = malloc(RESPONSESIZE*sizeof(char));
-	
+
 	int nwrite;
 	int nread;
 	int status;
@@ -26,9 +27,9 @@ void coord_communication(int in,int out)
 	int send_counter = 0;
 	int receive_counter = 0;
 	pid_t wpid;
-	
+
 	strcpy(operation,"START");
-	
+
 	pool_table = malloc(MORE_POOLS*sizeof(struct entry));
 	pools+=MORE_POOLS;
 	for(i=0;i<pools;++i)
@@ -38,7 +39,7 @@ void coord_communication(int in,int out)
 		pool_table[i].jobIDUpperBound=jobs_pool;
 		pool_table[i].jobIDLowerBound=i+1;
 	}
-/***********************************************************************************/	
+/***********************************************************************************/
 
 	/*Loop until operation is "shutdown"*/
 	while(strcmp(operation,"shutdown"))
@@ -62,9 +63,9 @@ void coord_communication(int in,int out)
 			}
 		}
 	}
-	
+
 /***********************************************************************************/
-	
+
 	/*No need to wait for pools here*/
 	/*Ive done that in shutdown() function */
 
@@ -73,12 +74,11 @@ void coord_communication(int in,int out)
 	free(response);
 }
 
-
 void create_response(char* operation,char* response)
 {
 	char* token = malloc(MSGSIZE*sizeof(char));
 	sscanf(operation,"%s",token);
-	
+
 	if(!strcmp(token,"submit"))
 	{
 		submit(operation,response);
@@ -109,7 +109,7 @@ void create_response(char* operation,char* response)
 	}
 	else if(!strcmp(token,"resume"))
 	{
-		resume(operation,response);		
+		resume(operation,response);
 	}
 	else if(!strcmp(token,"shutdown"))
 	{
@@ -122,14 +122,12 @@ void create_response(char* operation,char* response)
 	free(token);
 }
 
-
 void update_table(int i)
 {
 	pool_table[i].running = 0;
 	pool_table[i].CurrentNumberOfJobs = 0;
 	jobs_served+=jobs_pool;
 }
-
 
 int first_available(void)
 {
@@ -148,16 +146,16 @@ int first_available(void)
 	if(i==pools)
 	{
 		retval=pools;
-		
+
 		/*Increase pools*/
 		pools+=MORE_POOLS;
-		
+
 		/*Make sure that realloc succeeded*/
 		struct entry* newptr;
 		if(newptr = realloc(pool_table,pools*sizeof(struct entry))) pool_table = newptr;
 		else {perror("realloc error...");exit(-9);}
-		
-		
+
+
 		/*Initialize from i:pools to i:pools+MORE_POOLS*/
 		for(;i<pools;++i)
 		{
@@ -166,12 +164,12 @@ int first_available(void)
 		}
 		create_pool(retval);
 	}
-	
+
 	/*We found a pool with enough space*/
 	else
 	{
 		/*If pool his not currently running*/
-		if(!pool_table[retval].running) 
+		if(!pool_table[retval].running)
 		{
 			create_pool(retval);
 		}
@@ -181,11 +179,11 @@ int first_available(void)
 
 int find_pool_index(int jobID)
 {
-	
+
 	int i;
-	
+
 	if(jobID > jobs_sent)return -1;
-	
+
 	for(i=0;i<pools;++i)
 	{
 		if( pool_table[i].jobIDLowerBound <= jobID && pool_table[i].jobIDUpperBound >= jobID && pool_table[i].running )
@@ -211,38 +209,40 @@ void create_pool(int index)
 			perror (" Failed to fork [coordinator --> pool]");
 			exit (-1) ;
 		}
-		
+
 		case 0:
 		{
-			/*Argumnets given to ./pool: 
-				pool_number , 
-				max jobs per pool , [= jobs_pool]
-				fifo in name , [already attached to the path]
-				fifo out name, [already attached to the path]
-				path for creating directories 
-			*/
+			/**
+			 * Argumnets given to ./pool:
+			 *
+			 * 1. pool_number
+			 * 2. max jobs per pool [= jobs_pool]
+			 * 3. fifo in name  [already attached to the path]
+			 * 4. fifo out name [already attached to the path]
+			 * 5. path for output directories
+			 */
 			char pool_number[5];
 			char maxjobs[5];
 			sprintf(pool_number,"%d",jobs_sent+1);
 			sprintf(maxjobs,"%d",jobs_pool);
-			
+
 			if(execl("./pool","pool",pool_number,maxjobs,in,out,path,NULL)==-1){perror("[Error] Executing pool");exit(-2);}
 		}
 		default:
-		{	
+		{
 			pool_table[index].jobIDUpperBound = jobs_sent + jobs_pool;
 			pool_table[index].jobIDLowerBound = pool_table[index].jobIDUpperBound - jobs_pool + 1;
 			pool_table[index].running = 1;
 			pool_table[index].pool_pid = p;
-			
-			
+
+
 			/*Creating pool_out fifo*/
 			if ( mkfifo(out, 0666) == -1 )if ( errno!=EEXIST ) { perror("coordinator: mkfifo"); exit(-1); }
-			
+
 			/*Opening pool_out fifo*/
 			if ( ( pool_table[index].fd_out =open(out, O_RDONLY|O_NONBLOCK )) < 0)
 			{
-				perror("pool_out open problem[coordinator]"); exit(-3);	
+				perror("pool_out open problem[coordinator]"); exit(-3);
 			}
 
 			/*Opening pool_in [loop until pool_in has been created by the pool]*/
@@ -251,16 +251,13 @@ void create_pool(int index)
 	}
 }
 
-
-
-int check_exit(int pool,char* response)
+void exit_pool(int pool,char* response)
 {
-	
+
 	char* temp = malloc(RESPONSESIZE*sizeof(char));
 	int status;
 	int i;
 	int nwrite;
-	int ret = 0;
 	for(i=0;i<strlen(response);++i)
 	{
 		/*pool wants to exit*/
@@ -271,12 +268,12 @@ int check_exit(int pool,char* response)
 			{
 				perror("Error writing to pools");exit(1);
 			}
+
 			/*Wait for it to exit*/
-			wait(pool_table[pool].pool_pid,&status);
-			
+			waitpid(pool_table[pool].pool_pid,&status,WNOHANG);
+
 			/*Update pool table*/
 			update_table(pool);
-			ret = 1;
 			break;
 		}
 	}
@@ -284,5 +281,4 @@ int check_exit(int pool,char* response)
 	sscanf(response,"%[^$]",temp);
 	strcpy(response,temp);
 	free(temp);
-	return ret;
 }

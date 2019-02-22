@@ -55,8 +55,11 @@ int first_available(void);
 /*Finds the pool that has the jobID given as argument*/
 int find_pool_index(int);
 
-/*Executes pool.exe*/
+/*Executes pool executable*/
 void create_pool(int);
+
+/*Allows pool with the given id(int) to exit*/
+void exit_pool(int,char*);
 
 /*Forbids termination to pools*/
 void forbid_exit(int);
