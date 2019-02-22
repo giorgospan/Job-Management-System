@@ -226,7 +226,7 @@ void create_pool(int index)
 			sprintf(pool_number,"%d",jobs_sent+1);
 			sprintf(maxjobs,"%d",jobs_pool);
 
-			if(execl("./pool","pool",pool_number,maxjobs,in,out,path,NULL)==-1){perror("[Error] Executing pool");exit(-2);}
+			if(execl("./build/pool","pool",pool_number,maxjobs,in,out,path,NULL)==-1){perror("[Error] Executing pool");exit(-2);}
 		}
 		default:
 		{

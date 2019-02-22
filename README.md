@@ -36,7 +36,7 @@ Operations file will contain operations of the following types :
 
 ## Usage
 
-* `./jms console -w <jms in> -r <jms out> -o <operations file>`
+* `./jms console -w <jms in> -r <jms out> -o <operations-file>`
 
 * `./jms coord -l <path> -n <jobs pool> -w <jms out> -r <jms in>`
 

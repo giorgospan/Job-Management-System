@@ -15,12 +15,12 @@ int console_communication(FILE* file,int in,int out)
 	int nwrite;
 	int nread;
 	int retval=0;
-	
+
 	char* operation = malloc(MSGSIZE*sizeof(char));
 	char* response = malloc(RESPONSESIZE*sizeof(char));
 	strcpy(response,"OK");
-	FILE* output=fopen("log","w");
-	
+	// FILE* output=fopen("log","w");
+
 	while(1)
 	{
 		/*Scan operation, either from stdin or from opfile */
@@ -28,20 +28,20 @@ int console_communication(FILE* file,int in,int out)
 
 		/*Break if we've reached EOF [file might not contain shutdown operation]*/
 		else if(!fgets(operation,MSGSIZE,file))break;
-		
+
 		/* Remove trailing newline, if there. */
 		if ((strlen(operation)>0) && (operation[strlen (operation) - 1] == '\n'))operation[strlen (operation) - 1] = '\0';
-		
+
 		/*Write the next operation*/
 		if ((nwrite=write(in,operation, MSGSIZE)) == -1)
 		{ perror("Error in writing[console]"); exit(5); }
-	
+
 		/*Read message[info or OK]*/
 		if ( (nread=read(out, response, RESPONSESIZE))== -1)
 		{
 			perror("Error in reading[console]"); exit(4);
 		}
-		
+
 		/*Loop until OK has been received*/
 		while(strcmp(response,"OK"))
 		{
@@ -52,14 +52,14 @@ int console_communication(FILE* file,int in,int out)
 				perror("Error in reading[console]"); exit(4);
 			}
 		}
-		
+
 		/* Break if last operation sent was "shutdown" */
 		if(!strcmp(operation,"shutdown")){retval=1;break;}
 	}
-	
-	
-	
-	
+
+
+
+
 	/*Ive received info messages and OK"*/
 	/*Waiting for terminating message if shutdown was the last operation scanned*/
 	if(retval==1)
@@ -72,8 +72,8 @@ int console_communication(FILE* file,int in,int out)
 			break;
 		}
 	}
-	
-	fclose(output);
+
+	// fclose(output);
 	free(operation);
 	free(response);
 	return retval;
@@ -88,7 +88,7 @@ void scan_operation(char* operation)
 	int jobID;
 	char* job = malloc(200*sizeof(char));
 	int duration;
-	
+
 	/*Loop until a valid choice has been  given*/
 	while(choice<1 || choice>9)
 	{
@@ -96,7 +96,7 @@ void scan_operation(char* operation)
 		printf("Select an operation :\n");
 		printf("---------------------\n");
 
-		printf(	
+		printf(
 			"1.submit\n"
 			"2.status\n"
 			"3.status-all\n"
@@ -106,7 +106,7 @@ void scan_operation(char* operation)
 			"7.suspend\n"
 			"8.resume\n"
 			"9.shutdown\n\n");
-			
+
 		scanf("%d",&choice);
 		switch(choice)
 		{
