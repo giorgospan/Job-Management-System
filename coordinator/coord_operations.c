@@ -27,7 +27,6 @@ void submit(char* operation,char* response)
 
 	/*Find first available pool*/
 	available = first_available();
-	printf("available pool:%d\n",available);
 
 	/*Send operation to the pool */
 	if ((nwrite=write(pool_table[available].fd_in,operation, MSGSIZE)) == -1)
@@ -41,7 +40,7 @@ void submit(char* operation,char* response)
 		{
 
 			/* Increase number of jobs in this pool */
-			/* Increase number of jobs sent in general */
+			/* Increase total number of jobs sent to all pools */
 			++pool_table[available].CurrentNumberOfJobs ;
 			++jobs_sent;
 			/*Check if the pool wants to exit*/
@@ -102,10 +101,10 @@ void status_all(char* operation,char* response)
 	int nwrite;
 	int nread;
 	int i;
-	int send_counter = 0;
-	int receive_counter = 0;
+	int send_counter     = 0;
+	int receive_counter  = 0;
 	int at_least_one_job = 0;
-	char* new_info = malloc(RESPONSESIZE*sizeof(char));
+	char* new_info       = malloc(RESPONSESIZE*sizeof(char));
 
 	/* Send this request to all pools currently running*/
 	for(i=0;i<pools;++i)
@@ -128,11 +127,11 @@ void status_all(char* operation,char* response)
 		{
 			if(pool_table[i].running)
 			{
-				// printf("Pool[%d] is running |  i:%d   | Address:%p \n",pool_table[i].pool_pid,i,&pool_table[i].pool_pid);
+				// printf("About to read from pool[%d]\n",i);
 				if(read(pool_table[i].fd_out,new_info,RESPONSESIZE)>0)
 				{
 					/*Check if a pool wants to exit*/
-					exit_pool(i,new_info);
+					// exit_pool(i,new_info);
 					if(strcmp(new_info,"ZERO JOBS FOUND"))
 					{
 						at_least_one_job = 1;
@@ -141,6 +140,7 @@ void status_all(char* operation,char* response)
 						else strcat(response,new_info);
 					}
 					++receive_counter;
+					// printf("Finished reading from pool[%d]:\n%s\n",i,new_info);
 				}
 			}
 		}
@@ -419,7 +419,7 @@ void shutdown(char* operation,char* response)
 	/*Number of jobs still in progress*/
 	int still_in_progress = 0;
 
-	/*Send SIGTERM[15] to all currently running pools*/
+	/*Send SIGTERM[15] to every pool currently running */
 	for(i=0;i<pools;++i)
 	{
 		if(pool_table[i].running)
@@ -428,13 +428,17 @@ void shutdown(char* operation,char* response)
 			kill(pool_table[i].pool_pid,15);
 
 			/*Wait until it has exited*/
-			if(waitpid(pool_table[i].pool_pid, &status,WNOHANG)>0)
+			if(waitpid(pool_table[i].pool_pid, &status,0)>0)
 			{
-				/*Each pool will exit with status equivalent to the number of jobs still in progress*/
+				/*Each pool will exit with status equal to the number of jobs still in progress*/
 				still_in_progress+=WEXITSTATUS(status);
 			}
 		}
 	}
+	printf("jobs_sent        :%d\n",jobs_sent);
+	printf("jobs_served      :%d\n",jobs_served);
+	printf("still_in_progress:%d\n\n",still_in_progress);
+
 	if(!jobs_served)sum = jobs_sent - still_in_progress;
 	else sum = jobs_served;
 	sprintf(response,"Served %d jobs,%d were still in progress",sum,still_in_progress);

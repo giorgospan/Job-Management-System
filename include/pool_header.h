@@ -1,14 +1,13 @@
 #ifndef POOL_HEADER_H
 #define POOL_HEADER_H
 
-
-
-/*
-Assumptions for job status:
- 1. Active
- 2. Finished
- 3. Suspended
-*/
+/**
+ * Assumptions for job status:
+ *
+ * 1. Active
+ * 2. Finished
+ * 3. Suspended
+ */
 
 extern struct entry* job_table;
 struct entry

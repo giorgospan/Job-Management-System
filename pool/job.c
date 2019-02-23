@@ -20,13 +20,13 @@ void create_directory(char* path,int jobID,int* outfd,int* errfd)
 		2:stderr
 	*/
 
-	char* outfile = malloc(NAMESIZE*sizeof(char));
-	char* errfile = malloc(NAMESIZE*sizeof(char));
-	char* directory = malloc(NAMESIZE*sizeof(char));
-	char* current_time = malloc(NAMESIZE*sizeof(char));
-	char* date = malloc(NAMESIZE*sizeof(char));
+	char* outfile       = malloc(NAMESIZE*sizeof(char));
+	char* errfile       = malloc(NAMESIZE*sizeof(char));
+	char* directory     = malloc(NAMESIZE*sizeof(char));
+	char* current_time  = malloc(NAMESIZE*sizeof(char));
+	char* date          = malloc(NAMESIZE*sizeof(char));
 
-	pid_t pid = getpid();
+	pid_t pid           = getpid();
 
 	time_t rawtime;
 	time(&rawtime);
@@ -69,7 +69,7 @@ void create_directory(char* path,int jobID,int* outfd,int* errfd)
 char** prepare_for_exec(char* path,char* job,int jobID)
 {
 	char** arguments = malloc(ARGUMENTS*sizeof(char*));
-	int i=0;
+	int i = 0;
 	int outfd;
 	int errfd;
 	char* token = malloc(20*sizeof(char));

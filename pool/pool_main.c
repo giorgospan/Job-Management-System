@@ -12,16 +12,14 @@
 #include "pool_header.h"
 
 
-
 /*These variables are declared in pool_header.h*/
 struct entry* job_table;
-
+char path[PATHSIZE];
 int maxjobs;
 int pool_first_job;
 int jobs     = 0;
 int finished = 0;
 int can_exit = 0;
-char path[PATHSIZE];
 
 void 	main(int argc, char *argv[])
 {
@@ -47,7 +45,7 @@ void 	main(int argc, char *argv[])
 
 	/*Accessing arguments given to pool executable  */
 	pool_first_job = atoi(argv[1]);
-	maxjobs = atoi(argv[2]);
+	maxjobs        = atoi(argv[2]);
 	strcpy(pool_in,argv[3]);
 	strcpy(pool_out,argv[4]);
 	strcpy(path,argv[5]);
@@ -56,6 +54,10 @@ void 	main(int argc, char *argv[])
 	for(i=0;i<maxjobs;++i) job_table[i].jobID = 0;
 
 /***********************************************************************************/
+
+	printf("POOL_IN_FIFO:%s\n\n",pool_in);
+	printf("POOL_OUT_FIFO:%s\n\n",pool_out);
+
 	/*Creating pool_in fifo*/
 	if ( mkfifo(pool_in, 0666) == -1 )
 	{

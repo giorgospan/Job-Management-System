@@ -61,22 +61,25 @@ void catch_term_signal(int signo)
 
 	for(i=0;i<maxjobs;++i)
 	{
-		/*Send signal to all processes that has not yet finished*/
+		/*Send SIGTERM[15] to all processes that has not yet finished*/
 		if(job_table[i].jobID)
 		if(job_table[i].status ==1 || job_table[i].status ==3)
 		{
-			/*Job might have finished while ive been here killing other jobs*/
+
+			/*Send the signal*/
 			kill(job_table[i].pid,signo);
-			if(waitpid(job_table[i].pid,&status,WNOHANG)>0)
-			{
-				++still_in_progress;
-			}
+
+			/*Wait for it to exit*/
+			waitpid(job_table[i].pid,&status,WNOHANG);
+
+			/*Increase counter*/
+			++still_in_progress;
 		}
 	}
-	/*Exit code will be used from coordinator*/
+
+	/*Pool's exit code will be used from coordinator*/
 	exit(still_in_progress);
 }
-
 
 void parse_operation(char* operation,char* response,int out)
 {
@@ -133,9 +136,6 @@ void parse_operation(char* operation,char* response,int out)
 	free(token);
 }
 
-
-
-
 void update_table(pid_t p)
 {
 	int i;
@@ -148,7 +148,6 @@ void update_table(pid_t p)
 		}
 	}
 }
-
 
 
 void find_status(int jobID,int i,char* response)

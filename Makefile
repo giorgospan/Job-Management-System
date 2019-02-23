@@ -24,17 +24,25 @@ CFLAGS 		     := -I./include -g
 
 JMS_IN 		     := jms_in
 JMS_OUT		     := jms_out
-DIRPATH 	     := ./
+OUTDIR 	       := ./output
 OPFILE 		     := opfile
-JOBS_POOL	     := 20
+JOBS_POOL	     := 10
 
-all:clean $(POOL) run_coord run_cons
 
+# 1. Cleanup
+# 2. Create output directory
+# 3. Create pool program
+# 4. Create and run coordinator program
+# 5. Create and run console program
+all:clean $(OUTDIR) $(POOL) run_coord run_cons
+
+$(OUTDIR):
+	mkdir $@
 
 ############## COORDINATOR ##############
 
 run_coord:$(COORD)
-	sudo ${COORD} -l $(DIRPATH) -w $(JMS_OUT) -r $(JMS_IN) -n $(JOBS_POOL) &
+	sudo valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ${COORD} -l $(OUTDIR) -w $(JMS_OUT) -r $(JMS_IN) -n $(JOBS_POOL) &
 
 $(COORD):$(COORD_OBJS) | $(BUILDDIR)
 	$(CC) $(CFLAGS) -o $@ $(COORD_OBJS)
@@ -82,7 +90,7 @@ clean:
 	@find ./* -type p -delete
 
 	@# delete output directories
-	@sudo rm -rf sdi1400136_*
+	@sudo rm -rf $(OUTDIR)/*
 
 	@echo Cleanup completed
 

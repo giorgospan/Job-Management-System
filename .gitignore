@@ -3,3 +3,6 @@
 
 # ingore all files inside bin directory
 build/
+
+# ingore all files inside output directory
+output/

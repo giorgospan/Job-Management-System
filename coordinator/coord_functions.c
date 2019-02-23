@@ -157,7 +157,7 @@ int first_available(void)
 		else {perror("realloc error...");exit(-9);}
 
 
-		/*Initialize from i:pools to i:pools+MORE_POOLS*/
+		/*Initialize i=pools ---> pools+MORE_POOLS*/
 		for(;i<pools;++i)
 		{
 			pool_table[i].CurrentNumberOfJobs=0;

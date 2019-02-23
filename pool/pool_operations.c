@@ -100,29 +100,35 @@ void status(int jobID,char* response)
 void status_all(int limit,char* response)
 {
 	int i;
-	int curr_time = time(NULL);
+	int curr_time     = time(NULL);
 	char* curr_status = malloc(RESPONSESIZE*sizeof(char));
-	int c = 0;
-	int found = 0;
-
+	int c             = 0;
+	int found         = 0;
 
 	for(i=0;i<maxjobs;++i)
 	{
-		/*If limit is -1, if statement will always succeed*/
 
-		if( curr_time - job_table[i].init_time <= limit && job_table[i].jobID)
-		{
-			found = 1;
-			find_status(job_table[i].jobID,i,curr_status);
-			strcat(curr_status,"\n");
-			if(!c)strcpy(response,curr_status);
-			else strcat(response,curr_status);
-			++c;
-		}
+		if(job_table[i].jobID)
+			if(limit>0 && curr_time - job_table[i].init_time <= limit)
+			{
+				found = 1;
+				find_status(job_table[i].jobID,i,curr_status);
+				strcat(curr_status,"\n");
+				if(!c)strcpy(response,curr_status);
+				else strcat(response,curr_status);
+				++c;
+			}
+			else
+			{
+				found = 1;
+				find_status(job_table[i].jobID,i,curr_status);
+				strcat(curr_status,"\n");
+				if(!c)strcpy(response,curr_status);
+				else strcat(response,curr_status);
+				++c;
+			}
 	}
 	if(!found)strcpy(response,"ZERO JOBS FOUND");
-
-
 	free(curr_status);
 }
 

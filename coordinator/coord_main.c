@@ -12,14 +12,14 @@
 
 
 /*These variable are declared in coord_header.h*/
-struct entry* pool_table;
 int jobs_per_pool;
-int finished    = 0;
-int created     = 0;
-int pools       = 0;
-int jobs_sent   = 0;
-int jobs_served = 0;
-char* path      = NULL;
+int finished             = 0;
+int created              = 0;
+int pools                = 0;
+int jobs_sent            = 0;
+int jobs_served          = 0;
+char* path               = NULL;
+struct entry* pool_table = NULL;
 
 
 int main(int argc,char* argv[])
@@ -90,9 +90,10 @@ int main(int argc,char* argv[])
 	/*Wait for console to exit first*/
 	while(strcmp(console_exit,"YES"))read(in,console_exit,MSGSIZE);
 
-
+	free(path);
 	free(jms_in);
 	free(jms_out);
+	free(pool_table);
 	free(console_exit);
 	// printf("Coordinator is exiting...\n");
 	exit(0);
