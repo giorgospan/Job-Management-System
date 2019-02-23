@@ -105,20 +105,12 @@ void status_all(int limit,char* response)
 	int c             = 0;
 	int found         = 0;
 
+	printf("LIMIT GIVEN:%d\n\n",limit);
 	for(i=0;i<maxjobs;++i)
 	{
 
 		if(job_table[i].jobID)
-			if(limit>0 && curr_time - job_table[i].init_time <= limit)
-			{
-				found = 1;
-				find_status(job_table[i].jobID,i,curr_status);
-				strcat(curr_status,"\n");
-				if(!c)strcpy(response,curr_status);
-				else strcat(response,curr_status);
-				++c;
-			}
-			else
+			if((limit>0 && curr_time - job_table[i].init_time <= limit) || (limit==-1))
 			{
 				found = 1;
 				find_status(job_table[i].jobID,i,curr_status);

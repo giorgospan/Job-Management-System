@@ -26,7 +26,7 @@ JMS_IN 		     := jms_in
 JMS_OUT		     := jms_out
 OUTDIR 	       := ./output
 OPFILE 		     := opfile
-JOBS_POOL	     := 10
+JOBS_POOL	     := 20
 
 
 # 1. Cleanup

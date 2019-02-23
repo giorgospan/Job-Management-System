@@ -55,9 +55,6 @@ void 	main(int argc, char *argv[])
 
 /***********************************************************************************/
 
-	printf("POOL_IN_FIFO:%s\n\n",pool_in);
-	printf("POOL_OUT_FIFO:%s\n\n",pool_out);
-
 	/*Creating pool_in fifo*/
 	if ( mkfifo(pool_in, 0666) == -1 )
 	{
