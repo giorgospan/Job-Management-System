@@ -37,12 +37,12 @@ int console_communication(FILE* file,int in,int out)
 
 		/*Write the next operation*/
 		if ((nwrite=write(in,operation, MSGSIZE)) == -1)
-		{ perror("Error in writing[console]"); exit(5); }
+		{ perror("Error in writing[console]"); exit(EXIT_FAILURE); }
 
 		/*Read message[info-message or OK-message]*/
 		if ( (nread=read(out,response, RESPONSESIZE))== -1)
 		{
-			perror("Error in reading[console]"); exit(4);
+			perror("Error in reading[console]"); exit(EXIT_FAILURE);
 		}
 
 		/*Loop until OK has been received*/
@@ -52,7 +52,7 @@ int console_communication(FILE* file,int in,int out)
 			// fprintf(output,"%s\n\n",response);
 			if ( (nread=read(out, response, RESPONSESIZE))== -1)
 			{
-				perror("Error in reading[console]"); exit(4);
+				perror("Error in reading[console]"); exit(EXIT_FAILURE);
 			}
 		}
 
@@ -71,7 +71,7 @@ int console_communication(FILE* file,int in,int out)
 		if(!strcmp("END_OF_EVERY_POOL",response) )
 		{
 			if ((nwrite=write(in,"YES", MSGSIZE)) == -1)
-			{ perror("Error in writing[console]"); exit(5); }
+			{ perror("Error in writing[console]"); exit(EXIT_FAILURE); }
 			break;
 		}
 	}

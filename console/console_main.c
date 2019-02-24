@@ -43,25 +43,25 @@ int main(int argc,char* argv[])
 	/*Sanity check*/
 	if(!jms_in || !jms_out)
 	{
-		printf("[Console]You did not enter jms_in and jms_out pipe names.Exiting...\n");
-		exit(1);
+		fprintf(stderr,"Usage: ./jms_console -w <jms-in> -r <jms-out> -o <operations-file>\n\n");
+		exit(EXIT_FAILURE);
 	}
 
 /***********************************************************************************/
 
 	/*Creating jms_in fifo in current directory*/
 	if ( mkfifo(jms_out, 0666) == -1 ){
-		if ( errno!=EEXIST ) { perror("receiver: mkfifo"); exit(1); };
+		if ( errno!=EEXIST ) { perror("receiver: mkfifo"); exit(EXIT_FAILURE); };
 		}
 
 	/*Opening both fifos*/
 	if ( (out=open(jms_out, O_RDONLY  )) < 0)
 	{
-		perror("jms_out open problem[console]"); exit(3);
+		perror("jms_out open problem[console]"); exit(EXIT_FAILURE);
 	}
 	if ( (in=open(jms_in, O_WRONLY )) < 0)
 	{
-		perror("jms_in open problem[console]"); exit(2);
+		perror("jms_in open problem[console]"); exit(EXIT_FAILURE);
 	}
 
 /***********************************************************************************/
@@ -74,7 +74,7 @@ int main(int argc,char* argv[])
 		if(!(fp=fopen(opfile,"r")))
 		{
 			perror("[Error] Opening Operation File");
-			exit(2);
+			exit(EXIT_FAILURE);
 		}
 		else
 		{
@@ -94,13 +94,13 @@ int main(int argc,char* argv[])
 	if( close(in)==-1)
 	{
 		perror("Closing jms_in[console]");
-		exit(6);
+		exit(EXIT_FAILURE);
 	}
 
 	if( close(out)==-1)
 	{
 		perror("Closing jms_out[console]");
-		exit(7);
+		exit(EXIT_FAILURE);
 	}
 	free(jms_in);
 	free(jms_out);

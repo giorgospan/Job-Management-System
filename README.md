@@ -85,16 +85,11 @@ Operations file will contain operations of the following types :
 
 ## Usage
 
-* `./build/jms_console -w <jms in> -r <jms out> -o <operations-file>`
+* `make`
 
+* `cd build`
 
-  * `jms_in`: name of the pipe used for feeding coordinator with operations
-
-  * `jms_out`: name of the pipe used for reading coordinator's response
-
-  * `operations-file`: name of the input file which will contain a list of [operations](#Operations) 
-
-* `./build/jms_coord -l <path> -n <jobs-pool> -w <jms out> -r <jms in>`
+* `./jms_coord -l <path> -n <jobs-pool> -w <jms-out> -r <jms-in> &`
 
 
   * `path`: directory name under which the output directories will be stored
@@ -106,8 +101,20 @@ Operations file will contain operations of the following types :
   * `jms-out`: name of the pipe used for writing the response back to the console 
 
 
+* `./jms_console -w <jms-in> -r <jms-out> -o <operations-file>`
 
-* `./jms_script.sh  -l <path> -c <command>`
+
+  * `jms_in`: name of the pipe used for feeding coordinator with operations
+
+  * `jms_out`: name of the pipe used for reading coordinator's response
+
+  * `operations-file`: name of the input file which will contain a list of [operations](#Operations) 
+
+
+### Running the script:
+
+
+`./jms_script.sh  -l <path> -c <command>`
 
   * `path`: directory name under which the output files/directories will be stored
 

@@ -15,18 +15,18 @@ HEADERS	       := $(wildcard include/*.h)
 BUILDDIR       := ./build
 
 # targets
-COORD		   := $(BUILDDIR)/jms_coord
-CONSOLE		   := $(BUILDDIR)/jms_console
-POOL		   := $(BUILDDIR)/pool
+COORD		   := jms_coord
+CONSOLE		   := jms_console
+POOL		   := pool
 
 CC 		       := gcc
 CFLAGS 		   := -I./include -g
 
-JMS_IN 		   := jms_in
-JMS_OUT		   := jms_out
+# JMS_IN	   := jms_in
+# JMS_OU	   := jms_out
+# JOBS_POOL	   := 10
 OUTDIR 	       := ./output
 OPFILE 		   := opfile
-JOBS_POOL	   := 10
 
 
 # 1. Cleanup
@@ -34,17 +34,16 @@ JOBS_POOL	   := 10
 # 3. Create pool program
 # 4. Create and run coordinator program
 # 5. Create and run console program
-all:clean $(OUTDIR) $(POOL) run_coord run_cons
+all:clean $(OUTDIR) $(BUILDDIR)/$(POOL) coordinator console
 
 $(OUTDIR):
 	mkdir $@
 
 ############## COORDINATOR ##############
 
-run_coord:$(COORD)
-	sudo ${COORD} -l $(OUTDIR) -w $(JMS_OUT) -r $(JMS_IN) -n $(JOBS_POOL) & 
+coordinator:$(BUILDDIR)/$(COORD)
 
-$(COORD):$(COORD_OBJS) | $(BUILDDIR)
+$(BUILDDIR)/$(COORD):$(COORD_OBJS) | $(BUILDDIR)
 	$(CC) $(CFLAGS) -o $@ $(COORD_OBJS)
 
 $(COORD_OBJS):./coordinator/%.o : ./coordinator/%.c
@@ -52,10 +51,9 @@ $(COORD_OBJS):./coordinator/%.o : ./coordinator/%.c
 
 ############## CONSOLE ##############
 
-run_cons:$(CONSOLE)
-	sudo ${CONSOLE} -w $(JMS_IN) -r $(JMS_OUT) -o $(OPFILE)
+console:$(BUILDDIR)/$(CONSOLE)
 
-$(CONSOLE):$(CONSOLE_OBJS) | $(BUILDDIR)
+$(BUILDDIR)/$(CONSOLE):$(CONSOLE_OBJS) | $(BUILDDIR)
 	$(CC) $(CFLAGS) -o $@ $(CONSOLE_OBJS)
 
 $(CONSOLE_OBJS):./console/%.o : ./console/%.c
@@ -64,7 +62,7 @@ $(CONSOLE_OBJS):./console/%.o : ./console/%.c
 
 ############## POOL ##############
 
-$(POOL):$(POOL_OBJS) | $(BUILDDIR)
+$(BUILDDIR)/$(POOL):$(POOL_OBJS) | $(BUILDDIR)
 	$(CC) $(CFLAGS) -o $@ $(POOL_OBJS)
 
 $(POOL_OBJS):./pool/%.o : ./pool/%.c
@@ -85,7 +83,7 @@ count:
 # delete output directories  
 .PHONY: clean
 clean:
-	@rm -f $(COORD_OBJS) $(CONSOLE_OBJS) $(POOL_OBJS) $(COORD) $(CONSOLE) $(POOL)
+	@rm -f $(COORD_OBJS) $(CONSOLE_OBJS) $(POOL_OBJS) $(BUILDDIR)/*
 
 	@find ./* -type p -delete
 

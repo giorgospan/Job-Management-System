@@ -48,13 +48,13 @@ void coord_communication(int in,int out)
 			/*Send response msg to console*/
 			if( (nwrite=write(out,msg,RESPONSESIZE))==-1)
 			{
-				perror("Error writing response to console...");exit(-1);
+				perror("Error writing response to console...");exit(EXIT_FAILURE);
 			}
 
 			/*Send OK for the next operation*/
 			if( (nwrite=write(out,"OK",RESPONSESIZE))==-1)
 			{
-				perror("Error writing \"OK\" to console...");exit(-1);
+				perror("Error writing \"OK\" to console...");exit(EXIT_FAILURE);
 			}
 		}
 	}
@@ -167,7 +167,7 @@ int first_available(void)
 		/*Make sure that realloc succeeded*/
 		struct entry* newptr;
 		if(newptr = realloc(pool_table,pools*sizeof(struct entry))) pool_table = newptr;
-		else {perror("realloc error...");exit(-9);}
+		else {perror("realloc error...");exit(EXIT_FAILURE);}
 
 
 		/*Initialize i=pools ---> pools+MORE_POOLS*/
@@ -240,7 +240,7 @@ void create_pool(int index)
 			sprintf(pool_first_job,"%d",jobs_sent+1);
 			sprintf(maxjobs,"%d",jobs_per_pool);
 
-			if(execl("./build/pool","pool",pool_first_job,maxjobs,in,out,path,NULL)==-1){perror("[Error] Executing pool");exit(-2);}
+			if(execl("./pool","pool",pool_first_job,maxjobs,in,out,path,NULL)==-1){perror("[Error] Executing pool");exit(EXIT_FAILURE);}
 		}
 		default:
 		{
@@ -251,12 +251,12 @@ void create_pool(int index)
 
 
 			/*Creating pool_out fifo*/
-			if ( mkfifo(out, 0666) == -1 )if ( errno!=EEXIST ) { perror("coordinator: mkfifo"); exit(-1); }
+			if ( mkfifo(out, 0666) == -1 )if ( errno!=EEXIST ) { perror("coordinator: mkfifo"); exit(EXIT_FAILURE); }
 
 			/*Opening pool_out fifo*/
 			if ( ( pool_table[index].fd_out =open(out, O_RDONLY|O_NONBLOCK )) < 0)
 			{
-				perror("pool_out open problem[coordinator]"); exit(-3);
+				perror("pool_out open problem[coordinator]"); exit(EXIT_FAILURE);
 			}
 
 			/*Opening pool_in [loop until pool_in has been created by the pool]*/
@@ -280,7 +280,7 @@ void exit_pool(int pool,char* response)
 			/*Send EXIT YES to this pool*/
 			if((nwrite=write(pool_table[pool].fd_in,"EXIT YES",MSGSIZE)==-1))
 			{
-				perror("Error writing to pools");exit(1);
+				perror("Error writing to pools");exit(EXIT_FAILURE);
 			}
 
 			/*Wait for it to exit*/
