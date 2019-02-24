@@ -15,8 +15,8 @@ HEADERS	       := $(wildcard include/*.h)
 BUILDDIR       := ./build
 
 # targets
-COORD		   := $(BUILDDIR)/coord
-CONSOLE		   := $(BUILDDIR)/console
+COORD		   := $(BUILDDIR)/jms_coord
+CONSOLE		   := $(BUILDDIR)/jms_console
 POOL		   := $(BUILDDIR)/pool
 
 CC 		       := gcc
