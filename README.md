@@ -28,7 +28,7 @@ The application consists of three main parts :
 
 ## Operations
 
-Operations file will contain operations of the following types :
+Operations file may contain the following operation types :
 
   * `submit <job>`
 
