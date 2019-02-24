@@ -15,18 +15,18 @@ HEADERS	       := $(wildcard include/*.h)
 BUILDDIR       := ./build
 
 # targets
-COORD		       := $(BUILDDIR)/coord
-CONSOLE		     := $(BUILDDIR)/console
-POOL		       := $(BUILDDIR)/pool
+COORD		   := $(BUILDDIR)/coord
+CONSOLE		   := $(BUILDDIR)/console
+POOL		   := $(BUILDDIR)/pool
 
-CC 		         := gcc
-CFLAGS 		     := -I./include -g
+CC 		       := gcc
+CFLAGS 		   := -I./include -g
 
-JMS_IN 		     := jms_in
-JMS_OUT		     := jms_out
+JMS_IN 		   := jms_in
+JMS_OUT		   := jms_out
 OUTDIR 	       := ./output
-OPFILE 		     := opfile
-JOBS_POOL	     := 5
+OPFILE 		   := opfile
+JOBS_POOL	   := 10
 
 
 # 1. Cleanup
