@@ -1,21 +1,34 @@
 submit ls -l
+submit date
+submit ls -l
+submit echo Hello
 submit ls -l
 submit ls -l
+submit whoami
+submit ls /home
 submit ls -l
+submit man ssh
 submit ls -l
-submit ls -l
-submit ls -l
-submit ls -l
-submit ls -l
-submit ls -l
-submit ls -l
-submit ls -l
-submit ls -l
-submit ls -l
-submit ls -l
-submit ls -l
-submit ls -l
-submit ls -l
+submit date
 submit ls -l
 submit sleep 200
-show-active
+submit ls /
+submit ls -l
+submit ls -l
+submit date
+submit ls -l
+submit echo Hello
+submit ls -l
+submit pwd
+submit whoami
+submit ls /home
+submit ls -l
+submit ls -l
+submit date
+submit ls -l
+submit sleep 200
+submit ls -l
+submit pwd
+submit ps -eF
+submit ls -l
+submit ls wrong_dir

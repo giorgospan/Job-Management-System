@@ -19,31 +19,32 @@ void pool_coord_comm(int in ,int out)
 	pid_t wpid;
 	int i;
 	char* operation = malloc(MSGSIZE*sizeof(char));
-	char* response = malloc(RESPONSESIZE*sizeof(char));
+	char* response  = malloc(RESPONSESIZE*sizeof(char));
 
 
 	while(1)
 	{
-		/*Check if there is something new from coordinator */
+		/* Check if there is something new from coordinator */
 		if((nread=read(in,operation, MSGSIZE))>0)
 		{
 			parse_operation(operation,response,out);
 
-			/*Coord has allowed me to exit*/
+			/* Coord has allowed me to exit */
 			if(!strcmp(response,"I AM EXITING")){break;}
-			/*I want to exit */
+
+			/* Inform coordinator that I'm about to exit */
+			/* by appending a dollar sign to the response */			
 			if(finished == maxjobs)
 			{
-				/*Append dollar sign to the response */
 				strcat(response,"$");
 			}
-			/*Otherwise just send back the response*/
+			/* Otherwise just send back the response */
 			if ((nwrite=write(out,response, RESPONSESIZE)) == -1)
 			{ perror("Pool Writing"); exit(5); }
 		}
 
 
-		/*Check if a job has exited*/
+		/* Check if a job has exited */
 		if( (wpid=waitpid (-1, &status , WNOHANG ))>0)
 				update_table(wpid);
 
@@ -61,23 +62,23 @@ void catch_term_signal(int signo)
 
 	for(i=0;i<maxjobs;++i)
 	{
-		/*Send SIGTERM[15] to all processes that has not yet finished*/
+		/* Send SIGTERM[15] to all processes that has not yet finished */
 		if(job_table[i].jobID)
 		if(job_table[i].status ==1 || job_table[i].status ==3)
 		{
 
-			/*Send the signal*/
+			/* Send the signal */
 			kill(job_table[i].pid,signo);
 
-			/*Wait for it to exit*/
+			/* Wait for it to exit */
 			waitpid(job_table[i].pid,&status,WNOHANG);
 
-			/*Increase counter*/
+			/* Increase counter */
 			++still_in_progress;
 		}
 	}
 
-	/*Pool's exit code will be used from coordinator*/
+	/* Pool's exit code will be used from coordinator */
 	exit(still_in_progress);
 }
 
@@ -154,22 +155,22 @@ void find_status(int jobID,int i,char* response)
 {
 	switch(job_table[i].status)
 	{
-		/*Currently Active*/
+		/* Currently Active */
 		case 1:
 		{
-			int init = job_table[i].init_time;
-			int active = job_table[i]. active_time;
-			int plus = job_table[i].last_suspended;
+			int init    = job_table[i].init_time;
+			int active  = job_table[i]. active_time;
+			int plus    = job_table[i].last_suspended;
 			int current = time(NULL);
 
 			int running ;
 
-			/*It has never been suspended*/
+			/* It has never been suspended */
 			if(!plus)
 			{
 				running = current - init;
 			}
-			/*It has been suspended at least one time */
+			/* It has been suspended at least one time */
 			else
 			{
 				running = active + current - plus;
@@ -177,13 +178,13 @@ void find_status(int jobID,int i,char* response)
 			sprintf(response,"JobID %d Status: Active (running for %d seconds)",jobID,running);
 			break;
 		}
-		/*Finished*/
+		/* Finished */
 		case 2:
 		{
 			sprintf(response,"JobID %d Status: Finished",jobID);
 			break;
 		}
-		/*Currently Suspended*/
+		/* Currently Suspended */
 		default:
 		{
 			sprintf(response,"JobID %d Status: Suspended",jobID);

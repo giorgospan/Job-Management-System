@@ -24,7 +24,7 @@ struct entry
 /*max number of jobs for pool [given as command line argument]*/
 extern int maxjobs;
 
-/*Number of pool*/
+/*Number(i.e. JobID) of first job for this pool*/
 extern int pool_first_job;
 
 /*Number of jobs currently in the pool*/

@@ -26,7 +26,7 @@ JMS_IN 		     := jms_in
 JMS_OUT		     := jms_out
 OUTDIR 	       := ./output
 OPFILE 		     := opfile
-JOBS_POOL	     := 20
+JOBS_POOL	     := 5
 
 
 # 1. Cleanup
@@ -42,7 +42,7 @@ $(OUTDIR):
 ############## COORDINATOR ##############
 
 run_coord:$(COORD)
-	sudo valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ${COORD} -l $(OUTDIR) -w $(JMS_OUT) -r $(JMS_IN) -n $(JOBS_POOL) &
+	sudo ${COORD} -l $(OUTDIR) -w $(JMS_OUT) -r $(JMS_IN) -n $(JOBS_POOL) & 
 
 $(COORD):$(COORD_OBJS) | $(BUILDDIR)
 	$(CC) $(CFLAGS) -o $@ $(COORD_OBJS)
@@ -80,16 +80,15 @@ count:
 	@wc $(COORD_SOURCE) $(CONSOLE_SOURCE) $(POOL_SOURCE) $(HEADERS)
 
 
-# cleanup
+# delete object files and executables
+# delete all named pipes in the current directory
+# delete output directories  
 .PHONY: clean
 clean:
-	@# delete object files and executables
 	@rm -f $(COORD_OBJS) $(CONSOLE_OBJS) $(POOL_OBJS) $(COORD) $(CONSOLE) $(POOL)
 
-	@# delete all named pipes in the current directory
 	@find ./* -type p -delete
 
-	@# delete output directories
 	@sudo rm -rf $(OUTDIR)/*
 
 	@echo Cleanup completed

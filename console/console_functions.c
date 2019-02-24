@@ -17,7 +17,10 @@ int console_communication(FILE* file,int in,int out)
 	int retval=0;
 
 	char* operation = malloc(MSGSIZE*sizeof(char));
-	char* response = malloc(RESPONSESIZE*sizeof(char));
+	memset(operation,0,MSGSIZE);
+	char* response  = malloc(RESPONSESIZE*sizeof(char));
+	memset(response,0,RESPONSESIZE);
+
 	strcpy(response,"OK");
 	// FILE* output=fopen("log","w");
 
@@ -36,8 +39,8 @@ int console_communication(FILE* file,int in,int out)
 		if ((nwrite=write(in,operation, MSGSIZE)) == -1)
 		{ perror("Error in writing[console]"); exit(5); }
 
-		/*Read message[info or OK]*/
-		if ( (nread=read(out, response, RESPONSESIZE))== -1)
+		/*Read message[info-message or OK-message]*/
+		if ( (nread=read(out,response, RESPONSESIZE))== -1)
 		{
 			perror("Error in reading[console]"); exit(4);
 		}

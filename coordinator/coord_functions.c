@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <fcntl.h> 		/*for flags in open() system call*/
+#include <fcntl.h>/*for flags in open() system call*/
 #include <sys/types.h> /*for creating named pipe*/
 #include <sys/wait.h> /*for wait*/
 #include <sys/stat.h>
@@ -17,28 +17,22 @@
 void coord_communication(int in,int out)
 {
 	char* operation = malloc(MSGSIZE*sizeof(char));
-	char* response = malloc(RESPONSESIZE*sizeof(char));
+	char* msg       = malloc(RESPONSESIZE*sizeof(char));
+	memset(operation,0,MSGSIZE);
+	memset(msg,0,RESPONSESIZE);
+
 
 	int nwrite;
 	int nread;
 	int status;
 	int i;
-	int no_op_left = 0;
-	int send_counter = 0;
+	int no_op_left      = 0;
+	int send_counter    = 0;
 	int receive_counter = 0;
 	pid_t wpid;
 
 	strcpy(operation,"START");
 
-	pool_table = malloc(MORE_POOLS*sizeof(struct entry));
-	pools+=MORE_POOLS;
-	for(i=0;i<pools;++i)
-	{
-		pool_table[i].CurrentNumberOfJobs=0;
-		pool_table[i].running=0;
-		pool_table[i].jobIDUpperBound=jobs_per_pool;
-		pool_table[i].jobIDLowerBound=i+1;
-	}
 /***********************************************************************************/
 
 	/*Loop until operation is "shutdown"*/
@@ -48,11 +42,11 @@ void coord_communication(int in,int out)
 		/*Read a new operation from console*/
 		if(  (nread=read(in,operation,MSGSIZE))>0 )
 		{
-			/*Execute the given command and fetch response via the "response" argument*/
-			execute_operation(operation,response);
+			/*Execute the given command and fetch response msg */
+			execute_operation(operation,msg);
 
-			/*Send response to console*/
-			if( (nwrite=write(out,response,RESPONSESIZE))==-1)
+			/*Send response msg to console*/
+			if( (nwrite=write(out,msg,RESPONSESIZE))==-1)
 			{
 				perror("Error writing response to console...");exit(-1);
 			}
@@ -72,54 +66,73 @@ void coord_communication(int in,int out)
 
 	/*Going back to main() in order to exit*/
 	free(operation);
-	free(response);
+	free(msg);
 }
 
-void execute_operation(char* operation,char* response)
+void execute_operation(char* operation,char* msg)
 {
-	char* token = malloc(MSGSIZE*sizeof(char));
-	sscanf(operation,"%s",token);
+
+	char* token         = malloc(MSGSIZE*sizeof(char));
+	char* pool_response = malloc(RESPONSESIZE*sizeof(char));
+	int ret             = sscanf(operation,"%s",token);
+
+	sprintf(msg,"\n=================================\n%s\n\n",operation);
+	
+	/* In case an empty line is read from input */
+	if(ret <= 0)
+	{
+		strcpy(pool_response,"Invalid Operation !");
+		strcat(msg,pool_response);
+		strcat(msg,"\n=================================\n");
+		free(token);
+		return;
+	}		
+
 
 	if(!strcmp(token,"submit"))
 	{
-		submit(operation,response);
+		submit(operation,pool_response);
 	}
 	else if(!strcmp(token,"status"))
 	{
-		status(operation,response);
+		status(operation,pool_response);
 	}
 	else if(!strcmp(token,"status-all"))
 	{
-		status_all(operation,response);
+		status_all(operation,pool_response);
 	}
 	else if(!strcmp(token,"show-active"))
 	{
-		show_active(operation,response);
+		show_active(operation,pool_response);
 	}
 	else if(!strcmp(token,"show-pools"))
 	{
-		show_pools(operation,response);
+		show_pools(operation,pool_response);
 	}
 	else if(!strcmp(token,"show-finished"))
 	{
-		show_finished(operation,response);
+		show_finished(operation,pool_response);
 	}
 	else if(!strcmp(token,"suspend"))
 	{
-		suspend(operation,response);
+		suspend(operation,pool_response);
 	}
 	else if(!strcmp(token,"resume"))
 	{
-		resume(operation,response);
+		resume(operation,pool_response);
 	}
 	else if(!strcmp(token,"shutdown"))
 	{
-		shutdown(operation,response);
+		shutdown(operation,pool_response);
 	}
 	else
 	{
-		strcpy(response,"Invalid Operation !");
+		strcpy(pool_response,"Invalid Operation !");
 	}
+
+	strcat(msg,pool_response);
+	strcat(msg,"\n=================================\n");
+	free(pool_response);
 	free(token);
 }
 
@@ -272,8 +285,6 @@ void exit_pool(int pool,char* response)
 
 			/*Wait for it to exit*/
 			waitpid(pool_table[pool].pool_pid,&status,WNOHANG);
-
-			printf("Pool with pool_id %d exited\n",pool);
 
 			/*Update pool table*/
 			update_table(pool);

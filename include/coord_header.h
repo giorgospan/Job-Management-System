@@ -37,10 +37,10 @@ extern char* path;
 /***************************************************************************************/
 
 
-/* Communication between console <---> coordinator  <------> pools */
+/*Communication between console <---> coordinator  <------> pools*/
 void coord_communication(int,int);
 
-/*  Communication between console <-------> pools */
+/*Communication between console <-------> pools*/
 void execute_operation(char*,char*);
 
 /*Updates pool table*/

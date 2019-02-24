@@ -105,7 +105,6 @@ void status_all(int limit,char* response)
 	int c             = 0;
 	int found         = 0;
 
-	printf("LIMIT GIVEN:%d\n\n",limit);
 	for(i=0;i<maxjobs;++i)
 	{
 
@@ -135,7 +134,7 @@ void show_active(char* response)
 	{
 		if(job_table[i].status == 1 && job_table[i].jobID)
 		{
-			sprintf(jobID,"jobID %d\n",job_table[i].jobID);
+			sprintf(jobID,"JobID %d\n",job_table[i].jobID);
 			if(!c)strcpy(response,jobID);
 			else strcat(response,jobID);
 			++c;
@@ -172,7 +171,7 @@ void show_finished(char* response)
 	{
 		if(job_table[i].status == 2 && job_table[i].jobID)
 		{
-			sprintf(jobID,"jobID %d\n",job_table[i].jobID);
+			sprintf(jobID,"JobID %d\n",job_table[i].jobID);
 			if(!c)strcpy(response,jobID);
 			else strcat(response,jobID);
 			++c;
@@ -197,8 +196,7 @@ void suspend(int jobID,char* response)
 		{
 			/*Send SIGSTOP to this pid */
 			ret=kill(job_table[i].pid,19);
-			/*Change its status*/
-			job_table[i].status = 3;
+
 			int current = time(NULL);
 
 			/*First time being suspended*/
@@ -217,9 +215,14 @@ void suspend(int jobID,char* response)
 		}
 	}
 
+	if(!ret)
+	{
+		/* Change its status to "suspend" */
+		job_table[i].status = 3;
+		sprintf(response,"Sent suspend signal to JobID %d",jobID);
+	}
 	/*If kill() returned -1 ---> job had already finished*/
-	if(!ret)sprintf(response,"Sent suspend signal to JobID %d",jobID);
-	else sprintf(response,"Job had already finished %d",jobID);
+	else sprintf(response,"Job has already finished %d",jobID);
 }
 
 
@@ -232,14 +235,18 @@ void resume(int jobID,char* response)
 		if(job_table[i].jobID == jobID)
 		{
 			/*Send SIGCONT to this pid*/
-			ret=kill(job_table[i].pid,18);
-			/*Change its status */
-			job_table[i].status = 1;
+			ret = kill(job_table[i].pid,18);
 			break;
 		}
 	}
+	
+	if(!ret)
+	{
+		/* Change its status to "active" */
+		job_table[i].status = 1;
+		sprintf(response,"Sent resume signal to JobID %d",jobID);
+	}
 	/*If kill() returned -1 ---> job had already finished*/
-	if(!ret)sprintf(response,"Sent resume signal to JobID %d",jobID);
-	else sprintf(response,"Job had already finished %d",jobID);
+	else sprintf(response,"Job has already finished %d",jobID);
 }
 

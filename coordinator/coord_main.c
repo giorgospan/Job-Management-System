@@ -80,6 +80,19 @@ int main(int argc,char* argv[])
 
 
 /***********************************************************************************/
+	
+	/* Create table with information for each pool */
+	pool_table = malloc(MORE_POOLS*sizeof(struct entry));
+	pools+=MORE_POOLS;
+	for(i=0;i<pools;++i)
+	{
+		pool_table[i].CurrentNumberOfJobs=0;
+		pool_table[i].running=0;
+		pool_table[i].jobIDUpperBound=jobs_per_pool;
+		pool_table[i].jobIDLowerBound=i+1;
+	}
+	
+	/* Initiate communication console <---> coordinator */	
 	coord_communication(in,out);
 
 	/*Send terminating message to console*/
