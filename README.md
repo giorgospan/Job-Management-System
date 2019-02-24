@@ -19,7 +19,7 @@ The application consists of three main parts :
 
   * **pool**          : Each pool handles the execution of all the jobs assigned to it. Pool program acts as a supervisor for its jobs. In addition, it returns statistics back to the coordinator upon finishing.
 
-  * **jms_script script** : Simple shell script which can be used to present or purge the  output directories. Each job creates a directory which contains its standard output as well as the standard error content . 
+  * **jms_script** : Simple shell script which can be used to present or purge the  output directories. Each job creates a directory which contains its standard output as well as the standard error content . 
 
   *Image below illustrates how the job service works*
 
