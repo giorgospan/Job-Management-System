@@ -40,7 +40,7 @@ void pool_coord_comm(int in ,int out)
 			}
 			/* Otherwise just send back the response */
 			if ((nwrite=write(out,response, RESPONSESIZE)) == -1)
-			{ perror("Pool Writing"); exit(5); }
+			{ perror("Pool Writing"); exit(EXIT_FAILURE); }
 		}
 
 

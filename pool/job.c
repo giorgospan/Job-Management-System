@@ -44,19 +44,19 @@ void create_directory(char* path,int jobID,int* outfd,int* errfd)
 	if( mkdir(directory,DIRPERMS)== -1 )
 	{
 		perror("Making directory");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	/*Creating the files*/
 	if( (*outfd=open(outfile,O_CREAT | O_RDWR, FILEPERMS)) == -1)
 	{
 		perror("Opening outfile");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	if( (*errfd=open(errfile,O_CREAT | O_RDWR, FILEPERMS)) == -1)
 	{
 		perror("Opening errfile");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	free(outfile);

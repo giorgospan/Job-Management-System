@@ -31,7 +31,7 @@ void submit(char* operation,char* response)
 	/*Send operation to the pool */
 	if ((nwrite=write(pool_table[available].fd_in,operation, MSGSIZE)) == -1)
 	{
-		perror("Coord writing to pool ");exit(-6);
+		perror("Coord writing to pool ");exit(EXIT_FAILURE);
 	}
 	while(1)
 	{
@@ -78,7 +78,7 @@ void status(char* operation,char* response)
 		/*Send request to this specific pool */
 		if ((nwrite=write(pool_table[pool].fd_in,operation, MSGSIZE)) == -1)
 		{
-			perror("Coord writing to pool ");exit(-6);
+			perror("Coord writing to pool ");exit(EXIT_FAILURE);
 		}
 		while(1)
 		{
@@ -114,7 +114,7 @@ void status_all(char* operation,char* response)
 			// printf("\nPool[%d] is running |  i:%d  | Address:%p\n",pool_table[i].pool_pid,i,&pool_table[i].pool_pid);
 			if ((nwrite=write(pool_table[i].fd_in,operation, MSGSIZE)) == -1)
 			{
-				perror("Coord writing to pool ");exit(-6);
+				perror("Coord writing to pool ");exit(EXIT_FAILURE);
 			}
 			++send_counter;
 		}
@@ -173,7 +173,7 @@ void show_active(char* operation,char* response)
 		if(pool_table[i].running)
 			if ((nwrite=write(pool_table[i].fd_in,operation, MSGSIZE)) == -1)
 			{
-				perror("Coord writing to pool ");exit(-6);
+				perror("Coord writing to pool ");exit(EXIT_FAILURE);
 			}
 		/* If pool has terminated, then all of its jobs have finished */
 	}
@@ -224,7 +224,7 @@ void show_pools(char* operation,char* response)
 		{
 			if ((nwrite=write(pool_table[i].fd_in,operation, MSGSIZE)) == -1)
 			{
-				perror("Coord writing to pool ");exit(-6);
+				perror("Coord writing to pool ");exit(EXIT_FAILURE);
 			}
 			++send_counter;
 		}
@@ -278,7 +278,7 @@ void show_finished(char* operation,char* response)
 		{
 			if ((nwrite=write(pool_table[i].fd_in,operation, MSGSIZE)) == -1)
 			{
-				perror("Coord writing to pool ");exit(-6);
+				perror("Coord writing to pool ");exit(EXIT_FAILURE);
 			}
 			++send_counter;
 		}
@@ -352,7 +352,7 @@ void suspend(char* operation,char* response)
 		/*Send request to this specific pool */
 		if ((nwrite=write(pool_table[pool].fd_in,operation, MSGSIZE)) == -1)
 		{
-			perror("Coord writing to pool ");exit(-6);
+			perror("Coord writing to pool ");exit(EXIT_FAILURE);
 		}
 		while(1)
 		{
@@ -392,7 +392,7 @@ void resume(char* operation,char* response)
 		/*Send request to this specific pool */
 		if ((nwrite=write(pool_table[pool].fd_in,operation, MSGSIZE)) == -1)
 		{
-			perror("Coord writing to pool ");exit(-6);
+			perror("Coord writing to pool ");exit(EXIT_FAILURE);
 		}
 		while(1)
 		{

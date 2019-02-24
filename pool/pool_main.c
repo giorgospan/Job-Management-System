@@ -50,6 +50,7 @@ void 	main(int argc, char *argv[])
 	strcpy(pool_out,argv[4]);
 	strcpy(path,argv[5]);
 
+
 	job_table  = malloc(maxjobs*sizeof(struct entry));
 	for(i=0;i<maxjobs;++i) job_table[i].jobID = 0;
 
@@ -58,16 +59,16 @@ void 	main(int argc, char *argv[])
 	/*Creating pool_in fifo*/
 	if ( mkfifo(pool_in, 0666) == -1 )
 	{
-		if ( errno!=EEXIST ) { perror("POOL: mkfifo"); exit(1); };
+		if ( errno!=EEXIST ) { perror("POOL: mkfifo"); exit(EXIT_FAILURE); };
 	}
 	/*Opening both pool fifos*/
 	if ( (in=open(pool_in, O_RDONLY | O_NONBLOCK)) < 0)
 	{
-		perror("pool_in open problem[POOL]"); exit(2);
+		perror("pool_in open problem[POOL]"); exit(EXIT_FAILURE);
 	}
 	if ( (out=open(pool_out, O_WRONLY  )) < 0)
 	{
-		perror("pool_out open problem[POOL]"); exit(3);
+		perror("pool_out open problem[POOL]"); exit(EXIT_FAILURE);
 	}
 
 /***********************************************************************************/

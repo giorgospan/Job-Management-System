@@ -58,21 +58,21 @@ int main(int argc,char* argv[])
 
 	if(!path || !jms_in || !jms_out || !jobs_per_pool)
 	{
-		printf("[Coordinator] You did not enter all of the arguments needed.Exiting...\n");
-		exit(1);
+		fprintf(stderr,"Usage: ./jms_coord -l <path> -n <jobs-pool> -w <jms-out> -r <jms-in>\n\n");
+		exit(EXIT_FAILURE);
 	}
 
 /***********************************************************************************/
 
 	/*Creating jms_in fifo*/
 	if ( mkfifo(jms_in, 0666) == -1 ){
-		if ( errno!=EEXIST ) { perror("coordinator: mkfifo"); exit(1); };
+		if ( errno!=EEXIST ) { perror("coordinator: mkfifo"); exit(EXIT_FAILURE); };
 		}
 
 	/*Opening jms_in [NO BLOCK , NO ERROR]*/
 	if ( (in=open(jms_in, O_RDONLY|O_NONBLOCK)) == -1)
 	{
-		perror("jms_in open problem[coordinator]"); exit(2);
+		perror("jms_in open problem[coordinator]"); exit(EXIT_FAILURE);
 	}
 
 	/*Opening jms_out [loop until jms_out has been running by the console]*/
@@ -97,7 +97,7 @@ int main(int argc,char* argv[])
 
 	/*Send terminating message to console*/
 	if (write(out,"END_OF_EVERY_POOL", MSGSIZE) == -1)
-	{ perror("Coord Writing to console "); exit(-5); }
+	{ perror("Coord Writing to console "); exit(EXIT_FAILURE); }
 
 
 	/*Wait for console to exit first*/

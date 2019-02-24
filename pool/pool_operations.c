@@ -57,7 +57,7 @@ void submit(char* job,char* response)
 		case -1:
 		{
 			perror("Fork pool --> job");
-			exit(-1);
+			exit(EXIT_FAILURE);
 		}
 
 		case 0:
@@ -69,7 +69,7 @@ void submit(char* job,char* response)
 			if(execvp(job,arguments)==-1)
 			{
 				printf("Job:\"%s\" failed\n",job);
-				exit(-2);
+				exit(EXIT_FAILURE);
 			}
 		}
 		default:
