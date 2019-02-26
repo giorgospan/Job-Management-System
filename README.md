@@ -19,7 +19,7 @@ The application consists of three main parts :
 
   * **pool**          : Each pool handles the execution of all the jobs assigned to it. Pool program acts as a supervisor for its jobs. In addition, it returns statistics back to the coordinator upon finishing.
 
-  * **jms_script** : Simple shell script which can be used to present or purge the  output directories. Each job creates a directory which contains its standard output as well as the standard error content . 
+  * **jms_script** : Simple shell script which can be used to present or purge the  output directories. Each job creates a directory which contains its standard output as well as the standard error content .
 
   *Image below illustrates how the job service works*
 
@@ -98,7 +98,7 @@ Operations file may contain the following operation types :
 
   * `jms-in`: name of the pipe used for reading operations sent by the consolse
 
-  * `jms-out`: name of the pipe used for writing the response back to the console 
+  * `jms-out`: name of the pipe used for writing the response back to the console
 
 
 * `./jms_console -w <jms-in> -r <jms-out> -o <operations-file>`
@@ -108,7 +108,7 @@ Operations file may contain the following operation types :
 
   * `jms_out`: name of the pipe used for reading coordinator's response
 
-  * `operations-file`: name of the input file which will contain a list of [operations](#Operations) 
+  * `operations-file`: name of the input file which will contain a list of [operations](#Operations)
 
 
 ### Running the script:
@@ -124,6 +124,6 @@ Operations file may contain the following operation types :
 
     2. `size [n]`: presents a list of the output directories sorted by size in ascending order. Optional argument `n`  limits the output to the n largest directories
 
-    3. `purge`: deletes all existing directories outputed by the jobs 
+    3. `purge`: deletes all existing directories outputed by the jobs
 
-  Modify makefile constants to match your needs (e.g: pipe names, output directory e.t.c)
+
