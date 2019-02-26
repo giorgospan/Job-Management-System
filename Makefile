@@ -15,18 +15,18 @@ HEADERS	       := $(wildcard include/*.h)
 BUILDDIR       := ./build
 
 # targets
-COORD		   := jms_coord
-CONSOLE		   := jms_console
-POOL		   := pool
+COORD		       := jms_coord
+CONSOLE		     := jms_console
+POOL		       := pool
 
-CC 		       := gcc
-CFLAGS 		   := -I./include -g
+CC 		         := gcc
+CFLAGS 		     := -I./include -g
 
-# JMS_IN	   := jms_in
-# JMS_OU	   := jms_out
+# JMS_IN	     := jms_in
+# JMS_OU	     := jms_out
 # JOBS_POOL	   := 10
 OUTDIR 	       := ./output
-OPFILE 		   := opfile
+OPFILE 		     := opfile
 
 
 # 1. Cleanup
@@ -80,7 +80,7 @@ count:
 
 # delete object files and executables
 # delete all named pipes in the current directory
-# delete output directories  
+# delete output directories
 .PHONY: clean
 clean:
 	@rm -f $(COORD_OBJS) $(CONSOLE_OBJS) $(POOL_OBJS) $(BUILDDIR)/*

@@ -17,9 +17,9 @@ int main(int argc,char* argv[])
 	int out;
 	int retval;
 
-	char* jms_in=NULL;
-	char* jms_out=NULL;
-	char* opfile=NULL;
+	char* jms_in  = NULL;
+	char* jms_out = NULL;
+	char* opfile  = NULL;
 
 	/*scanning command line arguments*/
 	for(i=1;i<argc;++i)
