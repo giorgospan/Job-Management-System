@@ -1,32 +1,32 @@
 # source files
-COORD_SOURCE   := $(wildcard ./coordinator/*.c)
-CONSOLE_SOURCE := $(wildcard ./console/*.c)
-POOL_SOURCE    := $(wildcard ./pool/*.c)
+COORD_SOURCE   	:= $(wildcard ./coordinator/*.c)
+CONSOLE_SOURCE 	:= $(wildcard ./console/*.c)
+POOL_SOURCE    	:= $(wildcard ./pool/*.c)
 
 # object files
-COORD_OBJS     := $(COORD_SOURCE:%.c=%.o)
-CONSOLE_OBJS   := $(CONSOLE_SOURCE:%.c=%.o)
-POOL_OBJS      := $(POOL_SOURCE:%.c=%.o)
+COORD_OBJS     	:= $(COORD_SOURCE:%.c=%.o)
+CONSOLE_OBJS   	:= $(CONSOLE_SOURCE:%.c=%.o)
+POOL_OBJS      	:= $(POOL_SOURCE:%.c=%.o)
 
 # headers
-HEADERS	       := $(wildcard include/*.h)
+HEADERS	       	:= $(wildcard include/*.h)
 
 # build directory
-BUILDDIR       := ./build
+BUILDDIR       	:= ./build
 
 # targets
-COORD		       := jms_coord
-CONSOLE		     := jms_console
-POOL		       := pool
+COORD		:= jms_coord
+CONSOLE		:= jms_console
+POOL		:= pool
 
-CC 		         := gcc
-CFLAGS 		     := -I./include -g
+CC		:= gcc
+CFLAGS		:= -I./include -g
 
-# JMS_IN	     := jms_in
-# JMS_OU	     := jms_out
-# JOBS_POOL	   := 10
-OUTDIR 	       := ./output
-OPFILE 		     := opfile
+# JMS_IN	:= jms_in
+# JMS_OU	:= jms_out
+# JOBS_POOL	:= 10
+OUTDIR		:= ./output
+OPFILE		:= opfile
 
 
 # 1. Cleanup
