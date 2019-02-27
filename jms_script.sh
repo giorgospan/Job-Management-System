@@ -21,7 +21,7 @@ for arg
 	fi
 	done
 
-# check if argument were given
+# check if arguments were given
 flag=1
 if [ -z "$path" ]; then
 	echo You did not enter path;
@@ -44,7 +44,7 @@ echo "Command: \"$command\""
 echo n: $n
 echo
 
-#execute the command given
+#execute command
 case $command in
 	"list")
 		for dir in "$( find $path -mindepth 1 -type d )"
