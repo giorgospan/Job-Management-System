@@ -48,7 +48,7 @@ Operations file may contain the following operation types :
 
   * `status-all [time-duration]`
 
-    Fetches the status of every job. `time-duration` is an optional parameter which defines how many seconds that may have passed since the job was fed to the system.
+    Fetches the status of every job. `time-duration` is an optional parameter which defines how many seconds may have passed since the job was fed to the system.
 
   * `show-active`
 
