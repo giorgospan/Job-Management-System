@@ -111,7 +111,7 @@ Operations file may contain the following operation types :
   * `operations-file`: name of the input file which will contain a list of [operations](#Operations)
 
 
-  *Note:* You may use [opfile](./opfile) and also add to it any operations you would like.
+  *Note:* You may use [opfile](./opfile) and add to it any operations you would like.
 
 
 ### Running the script:
